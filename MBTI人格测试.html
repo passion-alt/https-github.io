@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>MBTI 16型人格测评 · 50题5分制专业版</title>
+<meta name="description" content="荣格四维理论·50题5分制·正反题各半·平局标均衡，秒出16型人格+各维度强弱。手机点开即测，长按保存专属人设海报。" />
+<meta property="og:title" content="MBTI 16型人格测评 · 50题5分制专业版" />
+<meta property="og:description" content="荣格四维理论·50题5分制·正反题各半·平局标均衡，秒出16型人格+各维度强弱。手机点开即测，长按保存专属人设海报。" />
+<meta property="og:image" content="https://mbti-personality-test-11617.app.workbuddy.host/cover.png" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="MBTI 16型人格测评 · 50题5分制专业版" />
+<meta name="twitter:description" content="荣格四维理论·50题5分制·正反题各半·平局标均衡，秒出16型人格+各维度强弱。" />
+<meta name="twitter:image" content="https://mbti-personality-test-11617.app.workbuddy.host/cover.png" />
+<style>
+  :root{
+    --bg1:#1e2a4a; --bg2:#2c3e6b; --accent:#5b8def; --accent2:#3ec6b4;
+    --card:#ffffff; --text:#1f2a44; --muted:#7a86a1; --line:#e7ebf3;
+    --warn:#e8a33d; --ok:#3ec6b4; --g1:#5b8def; --g2:#3ec6b4;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--text);
+    background:#171233;
+    min-height:100vh;display:flex;justify-content:center;padding:20px;
+    position:relative;
+  }
+  /* 漫画星空星云：固定色雾 + 细碎星点，不用模糊大光斑 */
+  .app{
+    width:100%;max-width:440px;border-radius:24px;
+    box-shadow:0 24px 60px rgba(8,10,40,.6),0 0 0 1px rgba(255,255,255,.14);
+    overflow:hidden;position:relative;z-index:1;
+    min-height:560px;display:flex;flex-direction:column;
+    /* 用 auto margin 居中而非父级 align-items:center：
+       内容高于视口时 align-items:center 会产生「不可滚动」的顶部溢出
+       （手机上结果页顶部会被挤出屏幕且拉不回来），margin:auto 无此问题 */
+    margin:auto;
+    background:
+      radial-gradient(680px 320px at 78% -8%, rgba(140,92,255,.34), transparent 62%),
+      radial-gradient(560px 300px at 8% 22%, rgba(255,92,180,.16), transparent 60%),
+      radial-gradient(520px 460px at 96% 86%, rgba(64,196,255,.14), transparent 62%),
+      linear-gradient(170deg,#2b1f63 0%,#241a55 48%,#191239 100%);
+  }
+  .screen{display:none;flex:1;flex-direction:column;padding:30px 24px;animation:fade .35s ease;
+    padding-bottom:calc(30px + env(safe-area-inset-bottom,0px))}
+  .screen.active{display:flex}
+  /* 结果页最外层容器顶部安全区：刘海/状态栏高度 + 16px 留白。
+     用 padding 不用 margin——margin 会让容器与顶部背景之间露出断带；
+     env() 带 0px 兜底，未适配机型自动退化为纯 16px */
+  .result-page{padding-top:calc(env(safe-area-inset-top,0px) + 16px)}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  /* 题号行 + 行内细进度条（颜色随阶段天然递进，无刻度线） */
+  .q-progress{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .q-progress .mini-bar{flex:1;height:8px;border-radius:99px;
+    background:rgba(255,255,255,.13);
+    overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.28)}
+  .q-progress .mini-bar > i{display:block;height:100%;width:0;border-radius:99px;position:relative;
+    overflow:hidden;background:linear-gradient(90deg,#5ec8ff,#5b8def);
+    box-shadow:0 0 10px rgba(94,200,255,.65);
+    transition:width .45s cubic-bezier(.25,1,.35,1),background .6s ease,box-shadow .6s ease}
+  .q-progress .mini-bar > i::after{content:'';position:absolute;inset:0;
+    background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);
+    transform:skewX(-18deg);animation:barShine 2.6s ease-in-out infinite}
+  @keyframes barShine{0%{transform:translateX(-130%) skewX(-18deg)}60%,100%{transform:translateX(330%) skewX(-18deg)}}
+  .q-pct{font-size:12px;font-weight:800;color:#8fd9ff;min-width:40px;text-align:right;
+    font-variant-numeric:tabular-nums;text-shadow:0 0 10px rgba(94,200,255,.5);
+    transition:color .6s ease}
+  /* 题目转场：轻柔上浮淡入 */
+  .q-enter{animation:qIn .34s cubic-bezier(.22,.9,.32,1)}
+  @keyframes qIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+  .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:18px}
+  .bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));
+    transition:width .3s;box-shadow:0 0 10px rgba(91,141,239,.6)}
+
+  h1{font-size:26px;margin:0 0 8px;font-weight:900;letter-spacing:.5px;
+    background:linear-gradient(92deg,#8fd9ff,#bd8bff 42%,#ff8ad0);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 14px rgba(150,110,255,.5))}
+  .grp-row{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin:0 0 14px}
+  .gp{font-size:12px;font-weight:800;color:#fff;
+    background:color-mix(in srgb,var(--c) 30%,transparent);
+    border:1.5px solid color-mix(in srgb,var(--c) 62%,transparent);
+    padding:5px 11px;border-radius:99px}
+  /* 16 人格头像墙 */
+  .ava-wall{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;margin:4px 0 10px;width:100%}
+  .wall-ava{position:relative;border-radius:15px;aspect-ratio:1;cursor:pointer;
+    animation:breathe 4s ease-in-out infinite;animation-delay:var(--d,0s)}
+  .wa-in{border-radius:13px;overflow:hidden;border:2px solid rgba(255,255,255,.85);
+    box-shadow:0 3px 10px rgba(10,8,36,.45);width:100%;height:100%;
+    transition:border-color .15s,box-shadow .15s}
+  .wall-ava:hover{transform:scale(1.08);z-index:3}
+  .wall-ava.on{z-index:3}
+  .wall-ava.on .wa-in{border-color:var(--c);
+    box-shadow:0 0 0 3px var(--c),0 0 18px color-mix(in srgb,var(--c) 70%,transparent)}
+  /* 选中：漫画放射闪光 */
+  .wall-ava.on::after{content:'';position:absolute;inset:-70%;pointer-events:none;mix-blend-mode:screen;
+    background:
+      radial-gradient(closest-side,#fff 0 14%,rgba(255,255,255,0) 15%),
+      conic-gradient(from 0deg,
+        transparent 0 6%, rgba(255,255,255,.95) 6.4% 7%, transparent 7.6% 21%,
+        rgba(255,255,255,.85) 21.4% 22%, transparent 22.6% 36%,
+        rgba(255,255,255,.95) 36.4% 37%, transparent 37.6% 51%,
+        rgba(255,255,255,.85) 51.4% 52%, transparent 52.6% 66%,
+        rgba(255,255,255,.95) 66.4% 67%, transparent 67.6% 81%,
+        rgba(255,255,255,.85) 81.4% 82%, transparent 82.6% 96%,
+        rgba(255,255,255,.95) 96.4% 97%, transparent 97.6%);
+    animation:mangaFlash 1.7s ease-in-out infinite}
+  @keyframes mangaFlash{0%{opacity:0;transform:scale(.55)}55%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.35)}}
+  @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  .wall-ava svg{display:block;width:100%;height:100%}
+  .ava-hint{min-height:42px;font-size:12.5px;color:#d9d4f2;background:rgba(255,255,255,.08);
+    border:1.5px dashed rgba(255,255,255,.35);border-radius:14px;padding:8px 12px;line-height:1.7;
+    margin-bottom:12px;transition:border-color .2s;display:flex;align-items:center;justify-content:center}
+  h2{font-size:20px;margin:0 0 14px;font-weight:700}
+  .sub{color:var(--muted);font-size:14px;line-height:1.7}
+  .tag{display:inline-block;font-size:12px;color:#eae4ff;background:rgba(255,255,255,.1);
+    border:1.5px dashed rgba(200,170,255,.55);
+    padding:4px 13px;border-radius:99px;margin-bottom:14px;font-weight:700}
+
+  .btn{
+    border:none;border-radius:16px;padding:16px;font-size:16px;font-weight:900;letter-spacing:1px;
+    background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;
+    cursor:pointer;width:100%;margin-top:auto;transition:transform .1s,opacity .2s,box-shadow .1s;
+    box-shadow:0 6px 0 color-mix(in srgb,var(--g2) 55%,#000),0 12px 26px rgba(70,110,230,.45);
+    position:relative;overflow:hidden;border:2px solid rgba(255,255,255,.3);
+  }
+  /* 漫画速度线纹理 */
+  .btn:not(.ghost)::before{content:'';position:absolute;inset:-10%;pointer-events:none;
+    background:repeating-linear-gradient(100deg,transparent 0 15px,rgba(255,255,255,.14) 15px 16.5px);
+    transform:skewX(-13deg) scale(1.5);opacity:.7}
+  .btn:not(.ghost)::after{content:'';position:absolute;top:0;left:-60%;width:36%;height:100%;
+    background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);
+    transform:skewX(-20deg);animation:shine 3s infinite}
+  @keyframes shine{0%{left:-60%}55%,100%{left:130%}}
+  .btn:active{transform:scale(.98) translateY(3px);box-shadow:0 2px 0 color-mix(in srgb,var(--g2) 55%,#000),0 6px 14px rgba(70,110,230,.4)}
+  .btn.ghost{background:#f1f4fb;color:var(--text);margin-top:12px}
+  /* 未选答案时禁用：莓粉弱化态（与甜系主题一致，不再是脏蓝底） */
+  .btn:disabled,.btn[disabled]{background:rgba(255,255,255,.12);color:rgba(255,255,255,.45);
+    border-color:rgba(255,255,255,.14);box-shadow:none;cursor:not-allowed}
+  .btn:disabled::before,.btn:disabled::after{display:none}
+  .btn:disabled:active{transform:none}
+
+  .start-wrap{text-align:center;justify-content:center;align-items:center}
+  .start-wrap .sub{color:#b6afda}
+  .start-wrap .btn{margin-top:22px}
+  .slogan{font-size:15px;color:#d6cfef;line-height:1.8;font-weight:600;
+    text-shadow:0 0 18px rgba(180,140,255,.35)}
+  .scroll-hint{margin-top:16px;font-size:12px;color:#9a92c8;letter-spacing:1px;
+    animation:bob 2.2s ease-in-out infinite}
+  .more{width:100%;margin-top:24px;padding-top:24px;border-top:1.5px dashed rgba(190,170,255,.3)}
+  /* 折叠：16 种人格预览 */
+  .preview-toggle{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;
+    margin:18px 0 2px;padding:11px;border-radius:99px;cursor:pointer;user-select:none;
+    font-size:13.5px;font-weight:800;color:#ece7ff;position:relative;
+    background:rgba(255,255,255,.09);border:1.5px dashed rgba(210,180,255,.5);transition:.18s}
+  .preview-toggle:active{transform:scale(.99)}
+  .preview-toggle .chev{display:inline-block;font-size:11px;transition:transform .25s}
+  .preview-toggle.open .chev{transform:rotate(180deg)}
+  /* 漫画对话框小尾巴：指向下方折叠内容 */
+  .preview-toggle::after{content:'';position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);
+    width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;
+    border-top:9px solid rgba(210,180,255,.55)}
+  .preview-body{overflow:hidden;max-height:0;opacity:0;transition:max-height .35s ease,opacity .3s,margin .3s;margin:0}
+  .preview-body.open{max-height:1300px;opacity:1;margin:8px 0 2px}
+  .preview-body .grp-row{margin:0 0 12px}
+  /* HERO：星云微光 + 中央漫画插画 + 16 头像魔法阵环绕（无大块渐变） */
+  .start-hero{position:relative;width:calc(100% + 48px);margin:-30px 0 4px;height:216px;
+    background:radial-gradient(240px 130px at 50% 62%, rgba(150,110,255,.28), transparent 70%);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+  .hero-core{position:relative;width:150px;height:150px;display:flex;align-items:center;justify-content:center}
+  /* 漫画魔法阵：双层虚线圆环，缓慢旋转 */
+  .hero-core::before{content:'';position:absolute;inset:-26px;border-radius:50%;
+    border:1.5px dashed rgba(210,175,255,.45);animation:spin 30s linear infinite}
+  .hero-core::after{content:'';position:absolute;inset:-4px;border-radius:50%;
+    border:1px solid rgba(255,255,255,.16)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .hero-illu{width:130px;height:130px;position:relative;z-index:2;animation:bob 3.4s ease-in-out infinite;
+    filter:drop-shadow(0 12px 26px rgba(120,80,255,.6))}
+  /* 16 头像环绕轨道 */
+  .orbit{position:absolute;inset:0;pointer-events:none}
+  .orb-pos{position:absolute;left:50%;top:50%;width:0;height:0}
+  .orb{position:absolute;left:-15px;top:-15px;width:30px;height:30px;border-radius:10px;overflow:hidden;
+    border:2px solid rgba(255,255,255,.92);box-shadow:0 3px 10px rgba(10,8,36,.55);
+    pointer-events:auto;cursor:pointer;animation:breathe 4.4s ease-in-out infinite;animation-delay:var(--d,0s)}
+  .orb svg{display:block;width:100%;height:100%}
+  .orb-pos:hover .orb{transform:scale(1.3);z-index:4;border-color:#ffe9a8}
+  .float-emoji{position:absolute;font-size:20px;opacity:.95;z-index:3;
+    text-shadow:0 0 14px rgba(255,220,150,.8);animation:bob 4s ease-in-out infinite}
+  .fe1{top:26px;left:12%;animation-delay:.3s}
+  .fe2{top:70%;left:7%;animation-delay:1.2s}
+  .fe3{top:22%;right:11%;animation-delay:.8s}
+  .fe4{bottom:24px;right:15%;animation-delay:1.6s}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .dim-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0 4px;width:100%}
+  /* 马卡龙霓虹漫画卡：大圆角 + 虚线描边 + 彩色玻璃 */
+  .dim-card{background:linear-gradient(135deg,color-mix(in srgb,var(--c) 34%,#241b52),color-mix(in srgb,var(--c) 15%,#241b52));
+    border:1.5px dashed color-mix(in srgb,var(--c) 65%,transparent);
+    border-radius:18px;padding:9px 12px 9px 16px;text-align:left;
+    position:relative;overflow:hidden;box-shadow:0 6px 16px rgba(12,8,40,.4)}
+  .dim-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+    background:var(--c);box-shadow:0 0 10px var(--c)}
+  .dim-card span{font-size:16px;line-height:1}
+  .dim-card b{display:block;font-size:12.5px;color:#fff;margin-top:3px}
+  .dim-card i{display:block;font-style:normal;font-size:10.5px;color:#cfc6ee;margin-top:1px}
+  .meta{display:flex;gap:10px;margin:20px 0;flex-wrap:wrap;justify-content:center}
+  .meta div{background:rgba(255,255,255,.08);border:1.5px dashed rgba(205,180,255,.42);
+    border-radius:16px;padding:10px 14px;font-size:13px;color:#c8c1ec}
+  .meta b{display:block;color:#fff;font-size:16px;margin-top:2px;text-shadow:0 0 12px rgba(160,120,255,.55)}
+  .scale-demo{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:14px;padding:0 4px}
+
+  .q-count{display:inline-block;font-size:12px;font-weight:800;color:var(--accent);
+    background:#eef3ff;padding:4px 13px;border-radius:99px;letter-spacing:.5px;white-space:nowrap}
+  .q-text{font-size:19px;line-height:1.78;font-weight:600;margin-bottom:8px}
+  .q-hint{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .opt{
+    border:2px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:10px;
+    font-size:15px;cursor:pointer;touch-action:manipulation;
+    transition:background-color .2s,border-color .2s,box-shadow .2s,color .2s,transform .12s;
+    background:#fff;line-height:1.5;user-select:none;
+    display:flex;align-items:center;gap:11px;position:relative;width:100%;text-align:left;
+  }
+  .opt-idx{flex-shrink:0;width:27px;height:27px;border-radius:50%;background:#f1f4fb;
+    color:var(--muted);font-size:12.5px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;transition:.18s}
+  .opt:hover{border-color:#c9d6f5}
+  /* 按压反馈：轻微缩放，增强触感 */
+  .opt:active{transform:scale(.98)}
+  /* 选中态：柔和蓝发光边框 + 微提亮背景 + 圆圈填充 + 右侧对勾，一眼可辨 */
+  .opt.sel{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,#fff);
+    color:var(--text);font-weight:700;padding-right:44px;
+    box-shadow:0 0 0 1.5px var(--accent),0 4px 12px rgba(91,141,239,.2)}
+  .opt.sel .opt-idx{background:linear-gradient(135deg,#5ec8ff,#5b8def);color:#fff}
+  .opt.sel::after{content:'✓';position:absolute;right:14px;top:50%;transform:translateY(-50%);
+    width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#5ec8ff,#5b8def);
+    color:#fff;font-size:14px;font-weight:900;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 8px rgba(91,141,239,.4)}
+  .nav{display:flex;gap:10px;margin-top:18px}
+  .nav .btn{margin-top:0}
+
+  /* ---- 结果页 · 按 16 型分组自动换主题色 ---- */
+  .app.g-NT{--g1:#7c5cff;--g2:#4f46e5}
+  .app.g-NF{--g1:#14b8a6;--g2:#0d9488}
+  .app.g-SJ{--g1:#3b82f6;--g2:#1d4ed8}
+  .app.g-SP{--g1:#f59e0b;--g2:#ea580c}
+  /* 结果模式：整卡背景随人格类型渐变 */
+  .app.themed{background:linear-gradient(172deg,var(--rbg1) 0%,var(--rbg2) 42%,color-mix(in srgb,var(--rbg2) 32%,#fff) 100%)}
+  .app.themed .desc,.app.themed .radar-wrap,.app.themed .dim,
+  .app.themed .meta div,.app.themed .dim-card{background:rgba(255,255,255,.72)}
+  .app.themed .note{color:#55517a}
+  .app.in-quiz .q-hint,.app.in-quiz .q-count{color:#3f3d6b}
+  /* 答题模式：莓果粉紫基底 + 四角柔光晕（粉/紫/玫红），干净无插画元素 */
+  .app.in-quiz{
+    background:
+      radial-gradient(115% 88% at 9% 4%, rgba(255,138,193,.42), transparent 55%),
+      radial-gradient(110% 80% at 92% 2%, rgba(196,160,255,.36), transparent 52%),
+      radial-gradient(120% 100% at 84% 96%, rgba(255,96,170,.30), transparent 56%),
+      radial-gradient(115% 90% at 4% 98%, rgba(150,120,255,.26), transparent 54%),
+      linear-gradient(180deg,#3a1640 0%,#4b1c54 52%,#321039 100%);
+  }
+  /* 极淡噪点颗粒：叠在星云光晕之上、文字之下（z-index:0 < 内容 z-index:1），
+     内联 SVG feTurbulence 灰度颗粒，无外部依赖；opacity 0.06 几乎不可见，绝不干扰读题 */
+  .app.in-quiz::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:180px 180px;
+    background-repeat:repeat;
+    opacity:0.06;
+    pointer-events:none;
+    z-index:0;
+  }
+  #quiz .deco{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:22px;z-index:0}
+  /* 背景保持干净：只保留柔和渐变 + 极淡噪点 + 少量漂浮爱心，无星星/月亮/插画 */
+  #quiz .deco .geo{position:absolute;inset:0;overflow:hidden}
+  #quiz .deco .g{position:absolute;pointer-events:none}
+  /* 甜系小元素：漂浮爱心（原创小巧思，非直接照搬 Hello Kitty） */
+  #quiz .deco .g-heart{background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 21s-7.6-5-7.6-10.2A4.3 4.3 0 0 1 12 7.5a4.3 4.3 0 0 1 7.6 3.3C19.6 16 12 21 12 21z' fill='%23ff9ad5'/></svg>") center no-repeat;background-size:contain}
+  @keyframes heartfloat{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-7px) rotate(6deg)}}
+  #quiz .deco .g9{top:17%;left:7%;width:20px;height:20px;opacity:.5;animation:heartfloat 7s ease-in-out infinite}
+  #quiz .deco .g10{top:58%;right:9%;width:16px;height:16px;opacity:.42;animation:heartfloat 9s ease-in-out infinite reverse}
+  #quiz .deco .g11{bottom:13%;left:13%;width:24px;height:24px;opacity:.46;animation:heartfloat 8s ease-in-out infinite}
+  /* 答题页卡通角色：原创白猫（粉蝴蝶结），Hello Kitty 风的致敬但非精确保真，置于角落不挡内容 */
+  #quiz .deco .g-kitty{bottom:6px;left:-2px;width:82px;height:82px;opacity:.95}
+  #quiz .deco .g-kitty svg{width:100%;height:100%;display:block;filter:drop-shadow(0 4px 10px rgba(40,10,40,.25))}
+  /* 库洛米风小角色：黑紫头兜 + 粉骷髅，与左下白猫配对，右上角 */
+  #quiz .deco .g-kuromi{top:6%;right:2%;width:62px;height:62px;opacity:.78;animation:heartfloat 10s ease-in-out infinite}
+  #quiz .deco .g-kuromi svg{width:100%;height:100%;display:block;filter:drop-shadow(0 4px 10px rgba(40,10,40,.25))}
+  /* 漂浮蝴蝶结 */
+  #quiz .deco .g-bow{background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 32'><path d='M24,16 L4,6 L4,26 Z' fill='%23ff9ad5'/><path d='M24,16 L44,6 L44,26 Z' fill='%23ff9ad5'/><rect x='20' y='11' width='8' height='10' rx='3' fill='%23ff6fb3'/></svg>") center no-repeat;background-size:contain}
+  #quiz .deco .g-bow.b1{top:26%;left:2.5%;width:34px;height:23px;opacity:.55;animation:heartfloat 9s ease-in-out infinite}
+  #quiz .deco .g-bow.b2{bottom:24%;right:5%;width:26px;height:18px;opacity:.45;animation:heartfloat 7.5s ease-in-out infinite reverse}
+  /* 小云朵：缓慢横漂 */
+  #quiz .deco .g-cloud{background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 44'><g fill='%23ffffff'><ellipse cx='24' cy='30' rx='18' ry='10'/><ellipse cx='44' cy='24' rx='16' ry='12'/><ellipse cx='58' cy='32' rx='14' ry='8'/></g></svg>") center no-repeat;background-size:contain}
+  #quiz .deco .g-cloud.c1{top:12%;left:7%;width:64px;height:35px;opacity:.38;animation:clouddrift 14s ease-in-out infinite}
+  #quiz .deco .g-cloud.c2{top:47%;right:3%;width:50px;height:28px;opacity:.3;animation:clouddrift 18s ease-in-out infinite reverse}
+  @keyframes clouddrift{0%,100%{transform:translateX(0)}50%{transform:translateX(10px)}}
+  /* 波点泡泡：低透明度小圆点，填补空隙 */
+  #quiz .deco .g-dot{border-radius:50%;background:rgba(255,255,255,.22)}
+  #quiz .deco .g-dot.pink{background:rgba(255,158,213,.32)}
+  #quiz .deco .d1{top:20%;left:14%;width:10px;height:10px}
+  #quiz .deco .d2{top:38%;right:11%;width:7px;height:7px}
+  #quiz .deco .d3{top:64%;left:5%;width:12px;height:12px}
+  #quiz .deco .d4{bottom:18%;right:14%;width:8px;height:8px}
+  #quiz .deco .d5{top:30%;right:22%;width:6px;height:6px}
+  #quiz .deco .d6{bottom:34%;left:16%;width:6px;height:6px}
+  /* 中央水印：超大蝴蝶结，极淡，只在中央留白处作底纹，不挡字 */
+  #quiz .deco .g-wm{top:50%;left:50%;width:300px;height:172px;transform:translate(-50%,-50%);opacity:.08;
+    background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 32'><path d='M24,16 L2,4 L2,28 Z' fill='%23ff9ad5'/><path d='M24,16 L46,4 L46,28 Z' fill='%23ff9ad5'/><circle cx='24' cy='16' r='9' fill='%23ff6fb3'/><path d='M24,16 L18,30 L24,24 L30,30 Z' fill='%23ff9ad5'/></svg>") center/contain no-repeat}
+  /* 中部点缀：几颗低透明度小爱心/波点，填补中央空隙（均在内容层下，opacity 极低） */
+  #quiz .deco .g-heart.hc1{top:40%;left:29%;width:14px;height:14px;opacity:.28}
+  #quiz .deco .g-heart.hc2{top:56%;right:27%;width:11px;height:11px;opacity:.24}
+  #quiz .deco .g-heart.hc3{top:62%;left:23%;width:12px;height:12px;opacity:.22}
+  #quiz .deco .g-dot.d7{top:46%;left:41%;width:5px;height:5px}
+  #quiz .deco .g-dot.pink.d8{top:52%;right:39%;width:5px;height:5px}
+  #quiz .deco .g-dot.d9{top:58%;right:18%;width:6px;height:6px}
+  #quiz > *{position:relative;z-index:1}
+  /* 星空下的内容配色 */
+  .app.in-quiz .bar{background:rgba(255,255,255,.16)}
+  .app.in-quiz .q-count{background:rgba(255,255,255,.14);color:#fff}
+  /* 题面白字 + 深色描边/阴影：库洛米白脸、云朵等浅色装饰压在下面时仍清晰可读 */
+  .app.in-quiz .q-text{color:#fff;
+    text-shadow:1px 1px 0 rgba(22,8,32,.9),-1px -1px 0 rgba(22,8,32,.9),
+                1px -1px 0 rgba(22,8,32,.9),-1px 1px 0 rgba(22,8,32,.9),
+                0 2px 10px rgba(22,8,32,.6)}
+  .app.in-quiz .q-hint{color:#8b84ba;font-size:11.5px}
+  .app.in-quiz .btn.ghost{background:rgba(255,255,255,.13);color:#fff;border:2px solid rgba(255,255,255,.3)}
+  /* 甜系主按钮：莓粉 → 薰衣草紫，与粉色背景协调、仍为主视觉焦点 */
+  .app.in-quiz .nav .btn{--g1:#ff8fc7;--g2:#b06cff}
+  /* 首题「返回首页」：轻量次级按钮——小尺寸、低对比、无 3D 底座，不与主按钮抢视觉 */
+  #backBtn.home{
+    width:auto;padding:9px 16px;font-size:13px;font-weight:700;letter-spacing:.5px;
+    background:transparent;color:rgba(255,255,255,.62);
+    border:1px solid rgba(255,255,255,.22);border-radius:12px;
+    box-shadow:none;
+  }
+  #backBtn.home:active{transform:scale(.97);box-shadow:none}
+  #backBtn.home .bk-arrow{font-style:normal;font-size:16px;font-weight:800;
+    margin-right:4px;color:rgba(255,255,255,.72);vertical-align:-1px}
+  .app.in-quiz .opt{background:rgba(255,255,255,.08);backdrop-filter:blur(8px);color:#fff;
+    border:2px solid rgba(255,255,255,.22);box-shadow:none}
+  .app.in-quiz .opt:hover{border-color:rgba(255,255,255,.42)}
+  .app.in-quiz .opt:active{transform:scale(.98)}
+  .app.in-quiz .opt .opt-idx{background:rgba(255,255,255,.16);color:#fff}
+  /* 选中态：柔和粉色发光边框 + 微提亮玻璃底 + 圆圈填充 + 右侧对勾 */
+  .app.in-quiz .opt.sel{background:rgba(255,255,255,.16);border-color:#ff9ad5;color:#fff;
+    font-weight:700;box-shadow:0 0 0 1.5px #ff9ad5,0 0 14px rgba(255,154,213,.30)}
+  .app.in-quiz .opt.sel .opt-idx{background:linear-gradient(135deg,#ff9ad5,#c98bff);color:#fff;
+    box-shadow:0 0 8px rgba(255,154,213,.4)}
+  .app.in-quiz .opt.sel::after{background:linear-gradient(135deg,#ff9ad5,#c98bff);
+    box-shadow:0 2px 8px rgba(255,154,213,.45)}
+  #mtoast{position:absolute;left:50%;top:12px;transform:translateX(-50%) translateY(-8px);
+    background:linear-gradient(135deg,#9aa7ff,#ff9ad5);color:#fff;font-size:13px;font-weight:800;
+    padding:8px 20px;border-radius:99px;opacity:0;transition:.45s;z-index:5;pointer-events:none;
+    box-shadow:0 8px 20px rgba(0,0,0,.4);white-space:nowrap}
+  #mtoast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  .hero{position:relative;display:flex;align-items:center;gap:14px;color:#fff;border-radius:20px;
+    padding:22px 18px;margin-bottom:16px;overflow:hidden;
+    background:linear-gradient(135deg,var(--g1),var(--g2));
+    box-shadow:0 14px 30px rgba(30,42,74,.22)}
+  .hero::before,.hero::after{content:'';position:absolute;border-radius:50%;background:rgba(255,255,255,.15)}
+  .hero::before{width:150px;height:150px;top:-64px;right:-44px}
+  .hero::after{width:96px;height:96px;bottom:-46px;left:-24px;background:rgba(255,255,255,.09)}
+  .avatar-box{flex-shrink:0;width:126px;height:126px;border-radius:30px;overflow:hidden;
+    background:#fff;border:3px solid rgba(255,255,255,.6);
+    box-shadow:0 10px 26px rgba(0,0,0,.25)}
+  .avatar-box svg{display:block;width:100%;height:100%}
+  .av-prop,.av-float{animation:bob 3.2s ease-in-out infinite}
+  .av-spark{animation:twinkle 1.7s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+  @keyframes twinkle{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.25;transform:scale(.55) rotate(18deg)}}
+  .hero-txt{flex:1;min-width:0;position:relative;z-index:1;text-align:left}
+  .hero-group{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:2px;
+    background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.38);
+    padding:3px 12px;border-radius:99px;margin-bottom:6px}
+  .type-code{font-size:36px;font-weight:900;letter-spacing:4px;line-height:1.25;color:#9fdcff;
+    text-shadow:0 4px 14px rgba(0,0,0,.16)}
+  .type-name{font-size:18px;font-weight:900;margin-top:2px;color:#e3d4ff;letter-spacing:1px}
+  .type-tag{font-size:13px;font-weight:700;opacity:.95;margin-top:5px}
+  .pop{animation:pop .55s cubic-bezier(.2,1.5,.4,1)}
+  @keyframes pop{from{transform:scale(.55);opacity:0}to{transform:scale(1);opacity:1}}
+
+  .desc{font-size:14.5px;line-height:1.8;color:#3a465f;margin:0 0 14px;
+    background:#f6f8fd;border-radius:14px;padding:15px 16px;border-left:4px solid var(--g1)}
+  .strengths{margin:0 0 6px}
+  .strengths .lab,.block-lab{font-size:13px;color:var(--muted);margin-bottom:8px;font-weight:700}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font-size:13px;padding:6px 13px;border-radius:99px;font-weight:700}
+  .tip{font-size:13.5px;line-height:1.7;color:#3a465f;background:#fff7ec;border-radius:14px;
+    padding:14px 16px;margin:14px 0;border-left:4px solid var(--warn)}
+  .tip b{color:var(--warn);display:block;margin-bottom:6px}
+
+  .radar-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;background:#f6f8fd;
+    border-radius:16px;padding:14px 12px 12px;margin:14px 0 12px}
+  .radar-svg{width:216px;height:216px;display:block;max-width:100%}
+  .radar-note{font-size:12px;color:var(--muted);line-height:1.6;text-align:center}
+  .radar-note b{display:block;font-size:13px;color:var(--text);margin-bottom:2px}
+  @keyframes radarIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+
+  .dims{margin-top:2px}
+  /* 压缩版维度卡：两行结构（标签行+滑轨），不再占满整行高度 */
+  .dim{margin-bottom:9px;background:#f6f8fd;border-radius:13px;padding:10px 14px 12px}
+  .dim-head{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;
+    margin-bottom:8px;gap:6px}
+  .dim-head .pole{font-weight:800;color:#a7b0c3;transition:color .3s;
+    display:flex;align-items:baseline;gap:5px;white-space:nowrap}
+  .dim-head .pole b{font-size:12px;font-variant-numeric:tabular-nums}
+  .dim-head .pole.win{color:var(--g1)}
+  .dim-head .dname{color:var(--muted);font-weight:700;font-size:11.5px;
+    display:flex;align-items:center;gap:5px;white-space:nowrap}
+  .dim-head .dname i{font-style:normal;font-size:10px;font-weight:800;padding:1px 7px;border-radius:99px}
+  .dim-head .dname i.dbal{color:var(--warn);background:#fff3e0}
+  .dim-head .dname i.dstr{color:#98a1b5}
+  .track{height:10px;border-radius:99px;background:#e8ecf4;position:relative;overflow:hidden}
+  .track > i{position:absolute;top:0;height:100%;border-radius:99px;width:0;
+    transition:width .9s cubic-bezier(.25,1,.35,1)}
+  .track .fillL{right:50%;background:var(--g1)}
+  .track .fillR{left:50%;background:var(--g2)}
+  .mid{position:absolute;left:50%;top:0;width:3px;height:100%;background:#fff;
+    box-shadow:0 0 4px rgba(0,0,0,.08);transform:translateX(-1.5px)}
+
+  /* ===== 人格解读模块（特质/场景/短板） ===== */
+  .rt-block{background:#f6f8fd;border-radius:18px;padding:15px 17px;margin:0 0 10px}
+  .rt-title{font-size:13.5px;font-weight:800;color:var(--text);margin-bottom:8px;
+    display:flex;align-items:center;gap:7px}
+  .rt-body{font-size:13.5px;line-height:1.85;color:#3a465f}
+  .rt-list{margin:0;padding:0;list-style:none}
+  .rt-list li{font-size:13px;line-height:1.7;color:#3a465f;padding-left:15px;
+    position:relative;margin-bottom:5px}
+  .rt-list li:last-child{margin-bottom:0}
+  .rt-list li::before{content:'';position:absolute;left:2px;top:8px;width:5px;height:5px;
+    border-radius:50%;background:var(--g1)}
+
+  .share-row{display:flex;gap:10px;margin-top:18px}
+  .note{font-size:13px;color:var(--muted);line-height:1.7;margin-top:16px;
+    border-top:1px dashed var(--line);padding-top:14px}
+  .valid{font-size:12.5px;line-height:1.6;color:var(--warn);background:#fff7ec;
+    border-radius:12px;padding:12px;margin-top:14px}
+  .valid.pos{color:#2e8f76;background:#e9f7f2}
+
+  /* ===== 二次元漫感：星尘 / 流星 ===== */
+  .stardust{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  .start-wrap > *:not(.stardust){position:relative;z-index:1}
+  .sd-dot{position:absolute;border-radius:50%;
+    animation-name:sdDrift,sdTw;animation-timing-function:linear,ease-in-out;
+    animation-iteration-count:infinite,infinite}
+  @keyframes sdDrift{from{transform:translate3d(0,0,0)}to{transform:translate3d(var(--dx,8px),var(--dy,-46px),0)}}
+  @keyframes sdTw{0%,100%{opacity:.12}50%{opacity:.85}}
+  .meteor{position:absolute;width:130px;height:2px;border-radius:2px;
+    background:linear-gradient(90deg,transparent,#fff,transparent);opacity:0;transform:rotate(24deg)}
+  .meteor.m1{top:-6%;left:-16%;animation:meteor 9s linear infinite}
+  .meteor.m2{top:24%;left:-22%;width:90px;animation:meteor 13s linear infinite 4.5s}
+  @keyframes meteor{
+    0%{transform:translate(0,0) rotate(24deg);opacity:0}
+    4%{opacity:.95}
+    24%{transform:translate(430px,190px) rotate(24deg);opacity:0}
+    100%{transform:translate(430px,190px) rotate(24deg);opacity:0}}
+
+  /* ===== 漫画风人格弹窗卡片 ===== */
+  .ava-modal{position:absolute;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+    padding:24px;background:rgba(14,10,36,.62);backdrop-filter:blur(6px);--c:#7c5cff}
+  .ava-modal.show{display:flex}
+  .am-card{position:relative;width:100%;max-width:344px;border-radius:30px;padding:24px 22px 22px;
+    background:linear-gradient(160deg,#ffffff 0%,#f3ecff 58%,#ffe7f3 100%);
+    border:2.5px solid #fff;
+    box-shadow:0 18px 50px rgba(10,6,40,.6),0 0 40px rgba(140,100,255,.35);
+    animation:pop .45s cubic-bezier(.2,1.5,.4,1);text-align:center}
+  .am-card::before{content:'';position:absolute;inset:8px;border-radius:24px;pointer-events:none;
+    border:1.8px dashed color-mix(in srgb,var(--c) 55%,transparent)}
+  .am-card::after{content:'';position:absolute;left:50%;bottom:-15px;transform:translateX(-50%);
+    width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;
+    border-top:16px solid #fff}
+  .am-close{position:absolute;top:12px;right:12px;width:32px;height:32px;border:none;border-radius:50%;
+    background:rgba(70,50,130,.12);color:#4a3f6e;font-size:15px;font-weight:900;cursor:pointer;z-index:2}
+  .am-ava{width:124px;height:124px;margin:2px auto 12px;border-radius:32px;overflow:hidden;
+    border:3px solid #fff;box-shadow:0 10px 26px rgba(60,30,120,.35);background:#fff}
+  .am-ava svg{display:block;width:100%;height:100%}
+  .am-code{font-size:34px;font-weight:900;letter-spacing:6px;color:var(--c);line-height:1.1}
+  .am-name{font-size:16.5px;font-weight:800;color:#3a3055;margin-top:4px}
+  .am-grp{display:inline-block;margin:9px 0 11px;font-size:11.5px;font-weight:800;letter-spacing:2px;
+    color:#fff;background:var(--c);padding:3px 14px;border-radius:99px;
+    box-shadow:0 4px 12px color-mix(in srgb,var(--c) 45%,transparent)}
+  .am-desc{font-size:13px;line-height:1.75;color:#4a4266;background:#f6f2ff;border-radius:16px;padding:12px 14px;
+    border:1.5px dashed rgba(140,110,220,.35)}
+  .am-tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0 2px}
+  .am-tags span{font-size:12.5px;font-weight:800;color:var(--c);background:#fff;
+    border:1.5px dashed color-mix(in srgb,var(--c) 55%,transparent);padding:5px 13px;border-radius:99px}
+  .am-actions{margin-top:16px}
+
+  /* ===== 分享结果弹窗 ===== */
+  .share-modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;
+    padding:24px;background:rgba(14,10,36,.66);backdrop-filter:blur(6px);--c:#7c5cff;overflow-y:auto}
+  .share-modal.show{display:flex}
+  .sm-card{position:relative;width:100%;max-width:330px;margin:auto;border-radius:30px;padding:18px 18px 16px;
+    background:linear-gradient(160deg,#ffffff 0%,#f4edff 56%,#ffe9f4 100%);
+    border:2.5px solid #fff;
+    box-shadow:0 18px 50px rgba(10,6,40,.6),0 0 40px color-mix(in srgb,var(--c) 40%, transparent);
+    animation:pop .45s cubic-bezier(.2,1.5,.4,1);text-align:center}
+  .sm-card::before{content:'';position:absolute;inset:8px;border-radius:24px;pointer-events:none;
+    border:1.8px dashed color-mix(in srgb,var(--c) 55%,transparent)}
+  .sm-kicker{display:inline-block;font-size:13px;font-weight:900;letter-spacing:1.5px;color:#fff;
+    background:var(--c);padding:5px 16px;border-radius:99px;margin-bottom:11px;
+    box-shadow:0 4px 12px color-mix(in srgb,var(--c) 45%,transparent)}
+  .sm-ava{width:108px;height:108px;margin:0 auto 12px;border-radius:28px;
+    box-shadow:0 0 0 9px color-mix(in srgb,var(--c) 12%,transparent),
+      0 0 0 19px color-mix(in srgb,var(--c) 6%,transparent),
+      0 10px 26px rgba(60,30,120,.35)}
+  .sm-type{font-size:15.5px;font-weight:800;color:#6b5f8f}
+  .sm-type b{display:flex;align-items:center;justify-content:center;gap:10px;font-size:32px;
+    font-weight:900;letter-spacing:3px;line-height:1.25;margin-top:4px}
+  .sm-type b::before,.sm-type b::after{content:'';width:22px;height:3px;border-radius:2px;
+    background:linear-gradient(90deg,transparent,var(--c))}
+  .sm-type b::after{background:linear-gradient(90deg,var(--c),transparent)}
+  .sm-type .sm-code{color:var(--c)}
+  .sm-type .sm-nick{color:#3a3055;font-size:26px}
+  .sm-glow{margin:10px 4px 0;font-size:16.5px;font-weight:800;line-height:1.6;color:#3a3055}
+  .sm-chips{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin:10px 2px 0}
+  /* 胶囊：不写死 width，宽度由文字自适应，仅用 padding 控制留白；
+     加 max-width 防御过长标签，超出则省略号截断，绝不撑破格子 */
+  .sm-chips span{display:inline-flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:900;padding:6px 14px;max-width:100%;border-radius:999px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sm-dims{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin:9px 2px 0}
+  .sm-dims span{display:inline-flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:900;letter-spacing:0;color:var(--c);
+    background:color-mix(in srgb,var(--c) 10%,#fff);
+    border:1.5px solid color-mix(in srgb,var(--c) 30%,transparent);
+    padding:6px 13px;max-width:100%;border-radius:999px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sm-dims span b{color:#2e2848;margin-left:3px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .sm-perk{margin:11px 0 2px;font-size:13px;font-weight:800;line-height:1.75;color:#2e2848;
+    background:#f7f4ff;border:1.5px dashed rgba(140,110,220,.28);border-radius:16px;padding:10px 12px}
+  .sm-hook{margin:9px 4px 0;font-size:12.5px;font-weight:700;line-height:1.6;color:#8f87ad}
+  .sm-actions{margin-top:12px}
+  .sm-actions .btn{font-size:13.5px;padding:10px 14px;letter-spacing:.5px}
+  .sm-actions .btn.ghost{margin-top:8px}
+
+  /* ===== 分享海报预览层 ===== */
+  .poster-layer{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
+    padding:24px;background:rgba(14,10,36,.78);backdrop-filter:blur(8px);overflow-y:auto}
+  .poster-layer.show{display:flex}
+  .pl-card{width:100%;max-width:320px;margin:auto;text-align:center;animation:pop .45s cubic-bezier(.2,1.5,.4,1)}
+  .pl-img{width:100%;display:block;border-radius:24px;border:2.5px solid rgba(255,255,255,.85);
+    box-shadow:0 18px 50px rgba(10,6,40,.6);
+    -webkit-touch-callout:default;user-select:auto}
+  .pl-tip{font-size:13px;font-weight:800;letter-spacing:1px;color:#fff;margin:14px 0 10px}
+
+  /* ===== 续答横幅（断点续答） ===== */
+  .resume-bar{display:none;align-items:center;gap:8px;margin:16px 0 0;padding:10px 14px;
+    border-radius:16px;background:rgba(255,255,255,.09);border:1.5px dashed rgba(210,180,255,.5);
+    font-size:12.5px;color:#d9d3f2;text-align:left}
+  .resume-bar.show{display:flex}
+  .resume-bar b{color:#fff}
+  .resume-bar .rb-btns{margin-left:auto;display:flex;gap:8px;flex-shrink:0}
+  .resume-bar button{border:none;border-radius:99px;padding:6px 14px;font-size:12px;font-weight:800;cursor:pointer}
+  .resume-bar .rb-go{background:linear-gradient(135deg,#5ec8ff,#5b8def);color:#fff}
+  .resume-bar .rb-no{background:rgba(255,255,255,.14);color:#e6e0ff}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- START -->
+  <section id="start" class="screen active start-wrap">
+    <div class="stardust" id="stardust" aria-hidden="true">
+      <span class="meteor m1"></span><span class="meteor m2"></span>
+    </div>
+    <div class="start-hero">
+      <div class="orbit" id="orbit"></div>
+      <div class="hero-core">
+        <svg class="hero-illu" viewBox="0 0 200 200">
+          <defs>
+            <radialGradient id="hG" cx="34%" cy="28%" r="82%">
+              <stop offset="0" stop-color="#fff3ff"/><stop offset=".38" stop-color="#c98bff"/><stop offset="1" stop-color="#6a3cff"/>
+            </radialGradient>
+          </defs>
+          <g stroke="#fff" stroke-width="3" opacity=".14" stroke-linecap="round">
+            <path d="M100,14 L100,32"/>
+            <path d="M100,14 L100,32" transform="rotate(45 100 100)"/>
+            <path d="M100,14 L100,32" transform="rotate(90 100 100)"/>
+            <path d="M100,14 L100,32" transform="rotate(135 100 100)"/>
+            <path d="M100,14 L100,32" transform="rotate(180 100 100)"/>
+            <path d="M100,14 L100,32" transform="rotate(225 100 100)"/>
+            <path d="M100,14 L100,32" transform="rotate(270 100 100)"/>
+            <path d="M100,14 L100,32" transform="rotate(315 100 100)"/>
+          </g>
+          <circle cx="100" cy="100" r="54" fill="#a97cff" opacity=".2"/>
+          <circle cx="100" cy="100" r="44" fill="url(#hG)" stroke="#e9d6ff" stroke-width="3"/>
+          <path d="M100,71 l3.6,7.2 7.9,.9 -5.8,5.4 1.6,7.8 -7.3,-4.1 -7.3,4.1 1.6,-7.8 -5.8,-5.4 7.9,-.9 z" fill="#fff" opacity=".9"/>
+          <ellipse cx="87" cy="94" rx="5" ry="6.4" fill="#3a2a55"/>
+          <ellipse cx="113" cy="94" rx="5" ry="6.4" fill="#3a2a55"/>
+          <circle cx="85.2" cy="92" r="1.9" fill="#fff"/><circle cx="111.2" cy="92" r="1.9" fill="#fff"/>
+          <path d="M81,86 q6,-4 12,-1" stroke="#4a3a68" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          <path d="M119,86 q-6,-4 -12,-1" stroke="#4a3a68" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          <path d="M91,112 q9,8 18,0" stroke="#b4576b" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <ellipse cx="78" cy="106" rx="5.5" ry="3.2" fill="#ff8ab0" opacity=".55"/>
+          <ellipse cx="122" cy="106" rx="5.5" ry="3.2" fill="#ff8ab0" opacity=".55"/>
+          <path d="M78,73 C86,61 100,57 112,61" stroke="#fff" stroke-width="4.5" opacity=".55" fill="none" stroke-linecap="round"/>
+          <g fill="#ffe9a8">
+            <path d="M170,58 l2.4,4.8 4.8,2.4 -4.8,2.4 -2.4,4.8 -2.4,-4.8 -4.8,-2.4 4.8,-2.4 z"/>
+            <path d="M32,142 l1.8,3.6 3.6,1.8 -3.6,1.8 -1.8,3.6 -1.8,-3.6 -3.6,-1.8 3.6,-1.8 z" opacity=".85"/>
+          </g>
+        </svg>
+      </div>
+      <span class="float-emoji fe1">✨</span>
+      <span class="float-emoji fe2">💫</span>
+      <span class="float-emoji fe3">⭐</span>
+      <span class="float-emoji fe4">🌟</span>
+    </div>
+    <h1>MBTI 16型人格测评</h1>
+    <div class="tag">5 分制 · 正反平衡题 · 自评筛查</div>
+    <div class="slogan">读懂自己，也更懂身边的人 —— 约 8 分钟就好</div>
+
+    <div class="meta">
+      <div>📋 题目数量<b>50 题</b></div>
+      <div>⏱️ 预计用时<b>约 8 分钟</b></div>
+      <div>🎯 计分方式<b>5 档打分</b></div>
+    </div>
+    <button class="btn" onclick="startTest()">开始测评 →</button>
+    <div class="resume-bar" id="resumeBar">
+      <span>💾 有一份未完成的测评（第 <b id="resumeIdx">1</b> 题）</span>
+      <span class="rb-btns">
+        <button class="rb-go" onclick="resumeQuiz()">继续</button>
+        <button class="rb-no" onclick="resetQuiz()">重来</button>
+      </span>
+    </div>
+
+    <div class="preview-toggle" id="prevToggle" onclick="togglePreview()">
+      <span>查看 16 种人格预览</span><span class="chev">▾</span>
+    </div>
+    <div class="preview-body" id="previewBody">
+      <div class="grp-row">
+        <span class="gp" style="--c:#7c5cff">🔮 分析家</span>
+        <span class="gp" style="--c:#14b8a6">🌈 外交家</span>
+        <span class="gp" style="--c:#3b82f6">🛡️ 守护者</span>
+        <span class="gp" style="--c:#f59e0b">🎨 探险家</span>
+      </div>
+      <div class="ava-wall" id="avaWall"></div>
+      <div class="ava-hint">👆 点开任意头像，看看 TA 的人格卡与人设标签</div>
+    </div>
+
+    <div class="dim-grid">
+      <div class="dim-card" style="--c:#7c5cff"><span>⚡</span><b>精力指向</b><i>外向 E · 内向 I</i></div>
+      <div class="dim-card" style="--c:#14b8a6"><span>🔍</span><b>信息获取</b><i>实感 S · 直觉 N</i></div>
+      <div class="dim-card" style="--c:#f59e0b"><span>⚖️</span><b>决策方式</b><i>思考 T · 情感 F</i></div>
+      <div class="dim-card" style="--c:#3b82f6"><span>🧭</span><b>生活态度</b><i>判断 J · 感知 P</i></div>
+    </div>
+    <div class="sub" style="font-size:12px;margin-top:12px">
+      基于荣格心理类型理论，从四个维度判断你的人格倾向。<br/>
+      每题按「符合程度」打分，正反题各半；平局标为「特质灵活」。凭直觉作答即可，结果仅供自我探索参考。
+    </div>
+  </section>
+
+  <!-- QUESTION -->
+  <section id="quiz" class="screen">
+    <div class="deco" id="deco" aria-hidden="true">
+      <div class="geo">
+        <span class="g g-heart g9"></span><span class="g g-heart g10"></span><span class="g g-heart g11"></span>
+        <span class="g g-kitty"><svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <path d="M42,54 L35,20 L62,42 Z" fill="#ffffff" stroke="#e7c7e4" stroke-width="1.2"/>
+          <path d="M78,54 L85,20 L58,42 Z" fill="#ffffff" stroke="#e7c7e4" stroke-width="1.2"/>
+          <path d="M42,48 L39,30 L54,42 Z" fill="#ffd1ec"/>
+          <path d="M78,48 L81,30 L66,42 Z" fill="#ffd1ec"/>
+          <ellipse cx="60" cy="66" rx="41" ry="35" fill="#ffffff" stroke="#e7c7e4" stroke-width="1.6"/>
+          <g transform="translate(28,16)">
+            <path d="M0,9 L-15,-2 L-15,20 Z" fill="#ff8fc7"/>
+            <path d="M0,9 L15,-2 L15,20 Z" fill="#ff8fc7"/>
+            <circle cx="0" cy="9" r="6.5" fill="#ff6fb3"/>
+          </g>
+          <ellipse cx="46" cy="66" rx="3.6" ry="5.2" fill="#2b2740"/>
+          <ellipse cx="74" cy="66" rx="3.6" ry="5.2" fill="#2b2740"/>
+          <ellipse cx="60" cy="76" rx="3" ry="2.2" fill="#ffb3c8"/>
+          <g stroke="#caa9c9" stroke-width="1.2" stroke-linecap="round">
+            <path d="M30,72 L13,68"/><path d="M30,78 L13,81"/>
+            <path d="M90,72 L107,68"/><path d="M90,78 L107,81"/>
+          </g>
+          <ellipse cx="39" cy="76" rx="6.5" ry="3.8" fill="#ffc2dd" opacity=".7"/>
+          <ellipse cx="81" cy="76" rx="6.5" ry="3.8" fill="#ffc2dd" opacity=".7"/>
+        </svg></span>
+        <span class="g g-kuromi"><svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <path d="M40,36 L30,6 L56,26 Z" fill="#3a2b4d"/>
+          <path d="M80,36 L90,6 L64,26 Z" fill="#3a2b4d"/>
+          <ellipse cx="60" cy="60" rx="39" ry="35" fill="#4a3a63"/>
+          <ellipse cx="60" cy="67" rx="28" ry="24" fill="#ffffff"/>
+          <ellipse cx="50" cy="67" rx="3" ry="4.5" fill="#2b2740"/>
+          <ellipse cx="70" cy="67" rx="3" ry="4.5" fill="#2b2740"/>
+          <path d="M56,77 Q60,81 64,77" stroke="#2b2740" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <g transform="translate(60,34)">
+            <path d="M-7,3 a7,7 0 1 1 14,0 v3 h-14 z" fill="#ff9ad5"/>
+            <circle cx="-3" cy="1" r="1.4" fill="#4a3a63"/>
+            <circle cx="3" cy="1" r="1.4" fill="#4a3a63"/>
+          </g>
+          <ellipse cx="44" cy="75" rx="5" ry="3" fill="#ffc2dd" opacity=".7"/>
+          <ellipse cx="76" cy="75" rx="5" ry="3" fill="#ffc2dd" opacity=".7"/>
+        </svg></span>
+        <span class="g g-bow b1"></span><span class="g g-bow b2"></span>
+        <span class="g g-cloud c1"></span><span class="g g-cloud c2"></span>
+        <span class="g g-dot d1"></span><span class="g g-dot pink d2"></span>
+        <span class="g g-dot d3"></span><span class="g g-dot pink d4"></span>
+        <span class="g g-dot d5"></span><span class="g g-dot pink d6"></span>
+        <span class="g g-wm"></span>
+        <span class="g g-heart hc1"></span><span class="g g-heart hc2"></span><span class="g g-heart hc3"></span>
+        <span class="g g-dot d7"></span><span class="g g-dot pink d8"></span><span class="g g-dot d9"></span>
+      </div>
+    </div>
+    <div id="mtoast"></div>
+    <div class="q-progress">
+      <span class="q-count" id="qcount">第 1 / 50 题</span>
+      <div class="mini-bar"><i id="prog"></i></div>
+      <span class="q-pct" id="qpct">0%</span>
+    </div>
+    <div class="q-text" id="qtext"></div>
+    <div class="q-hint" id="qhint">✨ 凭第一直觉选，不用想太久</div>
+    <div id="opts"></div>
+    <div class="nav">
+      <button class="btn ghost" style="flex:1" id="backBtn" onclick="prevQ()">上一题</button>
+      <button class="btn" style="flex:2" id="nextBtn" onclick="nextQ()">下一题</button>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" class="screen result-page">
+    <div class="hero" id="hero">
+      <div class="avatar-box" id="avatarBox"></div>
+      <div class="hero-txt">
+        <div class="hero-group" id="tgroup"></div>
+        <div class="type-code" id="code">INTJ</div>
+        <div class="type-name" id="tname"></div>
+        <div class="type-tag" id="ttag"></div>
+      </div>
+    </div>
+    <div class="desc" id="tdesc"></div>
+    <div class="strengths">
+      <div class="lab">你的核心优势</div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="rt-block">
+      <div class="rt-title">🪞 你的人格特质</div>
+      <div class="rt-body" id="rtTrait"></div>
+    </div>
+    <div class="rt-block">
+      <div class="rt-title">🎯 适合场景 / 擅长领域</div>
+      <ul class="rt-list" id="rtScene"></ul>
+    </div>
+    <div class="rt-block">
+      <div class="rt-title">⚠️ 容易踩坑的短板</div>
+      <ul class="rt-list" id="rtWeak"></ul>
+    </div>
+    <div class="radar-wrap" id="radarWrap"></div>
+    <div class="block-lab">四维度能量分布</div>
+    <div class="dims" id="dims"></div>
+    <div class="tip" id="tip"></div>
+    <div class="valid" id="valid" style="display:none"></div>
+    <div class="share-row">
+      <button class="btn ghost" style="flex:1" onclick="restart()">重测</button>
+      <button class="btn" style="flex:2" onclick="shareResult()">分享结果</button>
+    </div>
+    <div class="note">
+      说明：本测评属于趣味性格自评工具，仅反映当下的自我倾向，不做心理诊断。人格类型没有好坏，维度接近代表你拥有双向特质。
+    </div>
+  </section>
+
+  <!-- 漫画风人格弹窗 -->
+  <div class="ava-modal" id="avaModal" onclick="if(event.target===this)closeAva()">
+    <div class="am-card" id="amCard">
+      <button class="am-close" onclick="closeAva()">✕</button>
+      <div class="am-ava" id="amAva"></div>
+      <div class="am-code" id="amCode">INTJ</div>
+      <div class="am-name" id="amName"></div>
+      <div><span class="am-grp" id="amGrp"></span></div>
+      <div class="am-desc" id="amDesc"></div>
+      <div class="am-tags" id="amTags"></div>
+      <div class="am-actions">
+        <button class="btn" onclick="closeAva();startTest()">立即测测我是谁 ⚡</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 分享结果弹窗 -->
+  <div class="share-modal" id="shareModal" onclick="if(event.target===this)closeShare()">
+    <div class="sm-card">
+      <button class="am-close" onclick="closeShare()">✕</button>
+      <div class="sm-kicker">✦ ✦ 分享我的测评结果 ✦ ✦</div>
+      <div class="am-ava sm-ava" id="smAva"></div>
+      <div class="sm-type">我的MBTI：<b id="smType"><span class="sm-code">INFP</span>｜<span class="sm-nick">调停者</span></b></div>
+      <div class="sm-glow" id="smGlow"></div>
+      <div class="sm-chips" id="smChips"></div>
+      <div class="sm-dims" id="smDims"></div>
+      <div class="sm-perk" id="smPerk">✅ 50题专业测评｜生成专属SVG人设头像｜完整人格分析报告</div>
+      <div class="sm-hook">🤭 把你的人格分享给好友，看看你们的人格搭配</div>
+      <div class="sm-actions">
+        <button class="btn" onclick="savePoster()">💾 保存海报，分享给好友</button>
+        <button class="btn ghost" onclick="closeShare()">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 分享海报预览层 -->
+  <div class="poster-layer" id="posterLayer" onclick="if(event.target===this)closePoster()">
+    <div class="pl-card">
+      <img class="pl-img" id="plImg" alt="MBTI 分享海报">
+      <div class="pl-tip">💾 长按图片，选「保存图片」或「发送给朋友」</div>
+      <button class="btn ghost" onclick="closePoster()">关闭</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ---------- 题库：50题，5分制，每维度正反向各半，题干只测单维度 ---------- */
+const BANK = [
+  // E/I —— 精力指向（E=外向, I=内向） 共12题：6正+6反
+  {dim:'EI',pole:'E',q:"在聚会或集体活动里，我通常越聊越带劲、更有精神。"},
+  {dim:'EI',pole:'E',q:"遇到事情，我习惯先说出来、和人讨论来理清思路。"},
+  {dim:'EI',pole:'E',q:"周末我更想约朋友出去热闹，而不是独自待着。"},
+  {dim:'EI',pole:'E',q:"在陌生场合，我比较容易主动开口认识新朋友。"},
+  {dim:'EI',pole:'E',q:"我享受成为聚会焦点或被关注的感觉。"},
+  {dim:'EI',pole:'E',q:"遇到新鲜事，我更想找人一起聊着探索。"},
+  {dim:'EI',pole:'I',q:"独处是我恢复精力、回血的重要方式。"},
+  {dim:'EI',pole:'I',q:"我更习惯先把想法在心里想清楚，再表达出来。"},
+  {dim:'EI',pole:'I',q:"比起打电话，我更偏好用文字沟通。"},
+  {dim:'EI',pole:'I',q:"在大群体里待久了，我会明显感到能量被消耗。"},
+  {dim:'EI',pole:'I',q:"我倾向于先把想法写下来，再决定要不要说。"},
+  {dim:'EI',pole:'I',q:"在人多的环境里工作，我会更容易分心、想躲清静。"},
+
+  // S/N —— 信息获取（S=实感, N=直觉） 共12题：6正+6反
+  {dim:'SN',pole:'S',q:"我更信任经过验证的经验和看得见的具体事实。"},
+  {dim:'SN',pole:'S',q:"描述一件事，我习惯先讲清楚细节和经过。"},
+  {dim:'SN',pole:'S',q:"学新东西，我偏好按步骤、有操作指引地来。"},
+  {dim:'SN',pole:'S',q:"我更关注眼前真实、能立刻落地的事。"},
+  {dim:'SN',pole:'S',q:"我偏爱具体、可操作的建议，而非泛泛而谈。"},
+  {dim:'SN',pole:'S',q:"我对当下正在发生的事，比遥远的设想更上心。"},
+  {dim:'SN',pole:'N',q:"我常能注意到事物背后隐藏的模式和趋势。"},
+  {dim:'SN',pole:'N',q:"比起细枝末节，我更容易先抓住整体脉络和大意。"},
+  {dim:'SN',pole:'N',q:"我欣赏有想象力、能跳出框架思考的人。"},
+  {dim:'SN',pole:'N',q:"比起纯写实，我对科幻、寓意类内容更感兴趣。"},
+  {dim:'SN',pole:'N',q:"我常被一个想法未来的各种可能性吸引。"},
+  {dim:'SN',pole:'N',q:"我更喜欢开放式、不预设答案的讨论。"},
+
+  // T/F —— 决策方式（T=思考, F=情感） 共12题：6正+6反
+  {dim:'TF',pole:'T',q:"做决定时，我更看重逻辑和对错，而非感受。"},
+  {dim:'TF',pole:'T',q:"朋友向我倾诉，我倾向于帮ta分析并给解决方案。"},
+  {dim:'TF',pole:'T',q:"我认为规则公平、一视同仁，比照顾个别感受更重要。"},
+  {dim:'TF',pole:'T',q:"争论时，我更在意谁的逻辑站得住脚。"},
+  {dim:'TF',pole:'T',q:"我觉得对事不对人，是高效沟通的前提。"},
+  {dim:'TF',pole:'T',q:"做选择时，我会先列利弊，再下结论。"},
+  {dim:'TF',pole:'F',q:"做决定前，我会认真考虑这件事对别人的影响。"},
+  {dim:'TF',pole:'F',q:"朋友难过时，我的第一反应是共情和安抚，而非分析。"},
+  {dim:'TF',pole:'F',q:"我更欣赏温暖、善良、体贴的人。"},
+  {dim:'TF',pole:'F',q:"我宁可维持关系和谐，也不愿把分歧说得太直白。"},
+  {dim:'TF',pole:'F',q:"我很难对在乎的人说重话，哪怕是为了他好。"},
+  {dim:'TF',pole:'F',q:"一个决定若伤了感情，我会重新审视它是否值得。"},
+
+  // J/P —— 生活态度（J=判断, P=感知） 共14题：7正+7反
+  {dim:'JP',pole:'J',q:"面对截止日，我会提前规划、尽早完成。"},
+  {dim:'JP',pole:'J',q:"旅行前我喜欢把行程安排得清清楚楚。"},
+  {dim:'JP',pole:'J',q:"我的桌面和生活通常保持整齐、有秩序。"},
+  {dim:'JP',pole:'J',q:"我倾向于尽快把决定定下来，不喜欢悬而未决。"},
+  {dim:'JP',pole:'J',q:"我习惯把大目标拆成每日待办。"},
+  {dim:'JP',pole:'J',q:"事情一旦定下来，我不太喜欢临时变卦。"},
+  {dim:'JP',pole:'J',q:"我偏爱有清晰节点和交付物的项目。"},
+  {dim:'JP',pole:'P',q:"比起按计划走，我更喜欢随性、走到哪算哪。"},
+  {dim:'JP',pole:'P',q:"我享受做事过程中临场发挥的自由感。"},
+  {dim:'JP',pole:'P',q:"我讨厌被条条框框和固定流程束缚。"},
+  {dim:'JP',pole:'P',q:"我喜欢多留几个选项，不急于收口。"},
+  {dim:'JP',pole:'P',q:"我享受在截止前才进入状态的紧张感。"},
+  {dim:'JP',pole:'P',q:"突如其来的邀约，我通常乐意接住。"},
+  {dim:'JP',pole:'P',q:"我讨厌被固定日程绑死，喜欢留白。"},
+];
+
+const SCALE = [
+  {v:5,t:'完全符合'},
+  {v:4,t:'比较符合'},
+  {v:3,t:'中立 / 不确定'},
+  {v:2,t:'比较不符合'},
+  {v:1,t:'完全不符合'},
+];
+
+const DIMCFG = {
+  EI:{poles:['E','I'],name:'精力指向',labels:['外向 E','内向 I']},
+  SN:{poles:['S','N'],name:'信息获取',labels:['实感 S','直觉 N']},
+  TF:{poles:['T','F'],name:'决策方式',labels:['思考 T','情感 F']},
+  JP:{poles:['J','P'],name:'生活态度',labels:['判断 J','感知 P']},
+};
+
+/* TYPE_INFO: [命名, 一句话人设, 核心描述, 核心优势[3], 成长贴士, 人格特质段落, 适合场景[2-3], 容易踩的短板[2-3]] */
+const TYPE_INFO = {
+  ISTJ:["物流师","稳健可靠的实干家","重视责任、秩序与事实，说到做到，是团队里最值得托付的基石。偏好按计划稳步推进，不喜无谓变动。",["说到做到","条理怪","不脑补"],"ISTJ 擅长把混乱变有序，但计划外总让你紧绷。每月故意留一件小事不走流程，你会发现备用方案没那么可怕。","你的可靠不是人设，是习惯。答应的事会做到，定好的规则会守住——团队里大家都在找的那种「确定性」，就是你的底色。你不相信捷径，只信任经得起检验的结果。",["流程规范、标准明确的工作（财务/法务/行政/运维）","需要长期跟进、细致核算的任务","规则清晰、少突发变动的团队"],["对临场变卦容忍度低，容易被突发状况打乱节奏","过于专注细节，可能忽略全局与新解法","不习惯表达情绪，容易被误读为冷淡"],"说了就做到的定心丸","世界可以乱，我的清单不能乱"],
+  ISFJ:["守卫者","温柔细心的守护者","敏锐察觉他人需求，默默把事情安排妥当，重视和谐与稳定。习惯用行动而非言语表达关心。",["超会照顾","耐心怪","记得你"],"ISFJ 擅长默默照顾所有人，却很少把自己写进照顾名单。每周留半天只安排自己的事，杯子先装满，温暖才能源源不断。","你是那种「不用说也会做」的人：谁最近状态不对、哪件事还差收尾、哪个细节容易出岔子，你都默默记在心上。温和不是没主见，而是你选择用照顾人的方式，守护自己重视的关系。",["需要耐心与细致度的支持岗（行政/护理/教务/HR）","长期稳定、人际温暖的团队","照顾他人、维护日常运转的角色"],["习惯把别人的需求排在自己前面，容易积攒委屈","不擅长拒绝，长期超负荷也不敢开口","面对冲突本能回避，问题被越拖越大"],"把每个人悄悄放在心上的温柔","把「没事」当成口头禅的守护者"],
+  INFJ:["提倡者","理想而通透的引路人","兼具洞察与同理，能看到别人背后的动机与情绪，追求有意义的事。内心坚定，外显温和。",["看穿你","认定就做","共情怪"],"INFJ 擅长读懂人心与走向，但期待太高时容易独自失落。把对他人的期望直接说出口，也允许对方拒绝，你会轻松很多。","你能看见别人没说出口的那部分：一个欲言又止的表情、一句客套背后的疲惫。理想主义对你不是空谈，而是「知道世界不够好，仍然选择做点什么」的执拗。外显温和，内里有一套近乎苛刻的标准。",["心理咨询/教育/内容创作等深度连接人的领域","有意义感、能推动改变的项目","需要洞察与策略结合的研究工作"],["对期待太认真，落空时的内耗远大于常人","能量储备有限，过度照顾他人会迅速枯竭","标准太高，容易对自己和关系失望"],"内心丰富、共情力满满的理想主义者","看得太透，所以选择温柔"],
+  INTJ:["建筑师","运筹帷幄的战略家","擅长构建系统与长远规划，独立而有远见，享受用逻辑拆解复杂问题。偏好自主掌控节奏。",["拆解力","不随流","看根子"],"INTJ 擅长推演整盘棋，却容易漏算人情和落地阻力。方案定稿前找一位爱挑刺的人过一遍，执行会补上最后一环。","你的大脑天生用来跑系统：再乱的一团麻，到你手里都会被自动拆成结构、层级和最优路径。你不太需要热闹，需要的是「这件事能不能按我推演的走」。独立不是姿态，是你验证过效率最高的方式。",["战略规划、产品架构、研究分析等复杂系统工作","目标明确、授权充分的环境","需要长期视角与独立决策的角色"],["过度信任自己的推演，容易低估执行层和人情变量","对低效协作耐心值极低，显得难以接近","计划被打乱时，内心的波动比表现出来的大得多"],"一眼看穿本质的冷静大脑","别人在聊天，我在重建世界秩序"],
+  ISTP:["鉴赏家","冷静灵巧的实战派","临场反应快，动手能力强，喜欢用实际方式解决问题而非空谈。低调而自在。",["越险越准","能修东西","冷静怪"],"ISTP 擅长临场拆解疑难，却对长期承诺天然警觉。给在乎的事设一个最小承诺，比如一年观察期，自由和未来就不必二选一。","你是疑难问题最后的答案。手比话快，眼睛比解释先到位——东西坏了、系统崩了、情况急了，大家回头找的那个人通常是你。不喜欢被框住，也不擅长解释自己，活儿说明一切。",["技术实操、故障排查、工程/运维类工作","高压临场、需要快速应变的岗位","结果导向、少开会少汇报的环境"],["讨厌承诺和长期规划，关键机会可能被错过","情绪表达额度有限，亲近的人常感到被推开","对重复事务极快厌倦，需要持续的新鲜刺激"],"越危急越靠得住的神队友","人狠话不多，动手比动嘴快"],
+  ISFP:["探险家","温柔真实的艺术家","重视当下体验与真实感受，审美细腻，用行动而非言语表达自己。随和而有原则。",["好看至上","有底线","活在当下"],"ISFP 擅长捕捉细节的美，却在冲突和计划前想后退。把大目标拆成本周一件有美感的小事，不逼自己规划，方向也会慢慢清晰。","你对世界的感知是像素级的：光线、材质、氛围、语气里那一丝不真诚，都逃不过你的雷达。不喜欢争辩，用行动和选择表达立场。温柔只是表层，触碰到你的价值观时，你会比谁都倔。",["设计/艺术/音乐/审美相关领域","氛围自由、不强制社交的创意环境","需要手感、审美与即兴发挥的工作"],["回避冲突和规划，重要的事一拖再拖","对批评敏感，需要较长时间消化","长期目标模糊，才华容易被日常稀释"],"把日子过成诗的审美生活家","温柔是底色，倔强是骨架"],
+  INFP:["调停者","心怀理想的梦想家","重视价值与意义，内心世界丰富，共情力强，愿意为在乎的事坚持。温柔但有棱角。",["不将就","共鸣怪","脑内奇幻"],"INFP 擅长共情与想象，却常卡在「想」到「做」之间。启动前只问今天能做的最小一步是什么，做完再谈完美。","你心里住着一个不肯将就的小孩：事情「应该是什么样」和「实际是什么样」之间的差距，是你所有痛苦和创造力的来源。共情是你的天线，价值是你的罗盘——再小的诱惑，也换不走你认定的事。",["写作/编辑/心理咨询/公益等价值驱动领域","能深度共情和帮助他人的角色","允许自由节奏、尊重个人空间的创作环境"],["想得多做得少，理想的启动键迟迟按不下","对批评和否定反应强烈，容易陷进自我怀疑","现实事务（流程/数字/琐事）消耗大量心力"],"永远心怀热望的纯粹灵魂","心是理想国，脚在尘世间"],
+  INTP:["逻辑学家","拆解世界的思想者","好奇心强，热衷追根究底与逻辑推演，享受在脑中构建理论模型。独立而开放。",["想通才休","好奇爆棚","对错重"],"INTP 擅长拆解复杂问题，却容易永远停在分析层。给想法设一个交付日，先做出60分的原型，答案会在打磨中浮现。","你的快乐来自「想通」的那一秒。别人看到结论，你忍不住拆到底层；别人接受规则，你先怀疑规则的前提。对世界的兴趣是纯粹的——不为有用，就为「它到底怎么运转的」。",["研究/开发/数据/算法等智力密集型工作","问题开放、允许自由探索的课题","少社交多思考的技术岗位"],["分析永无止境，落地和收口永远差一口气","对日常事务和人情世故耐心值为零","灵感多成品少，容易被更聪明的想法带偏"],"把世界拆明白的逻辑侦探","脑子里的世界，比眼前这个有意思"],
+  ESTP:["企业家","机敏果断的行动派","反应快、接地气，擅长在现实里抓住机会与人脉，享受即时反馈。行动先于犹豫。",["直接做","临场王","嗅觉灵"],"ESTP 擅长临场应变，却常在激情里做决定。重大选择先放一晚再点头，冲劲留给执行，判断留给清醒的你。","你是天生的破局者：别人还在开会讨论，你已经试完三遍了。对机会嗅觉极灵，对气氛一秒入戏，最大的恐惧是「无聊」。危机对你是兴奋剂——越混乱，你的判断越准、出手越快。",["销售/商务/谈判/创业等直面机会的战场","需要即时反馈和临场应变的环境","从0到1开拓、规则未定的岗位"],["先干后想，重大决策容易栽在细节和远期代价上","厌倦重复和维护，善后工作常烂尾","对缓慢、含蓄、需要等待的关系缺乏耐心"],"嗅觉敏锐说干就干的行动派","人生苦短，先把局搅热再说"],
+  ESFP:["表演者","点亮现场的气氛王","热情活泼，享受当下，天生擅长带动气氛、让人放松。朋友眼中的快乐源泉。",["气氛组","快乐传染","快速混熟"],"ESFP 擅长把现场点燃，却容易为一时快感预支明天。给钱包和日程各留10%缓冲，快乐也能更持久。","你在的地方，气氛自动升温三度。你活在「此刻」这个维度：当下的感受、眼前的人、即兴的快乐，都是真的。别人还在顾虑「合不合适」，你已经把快乐变成事实了。",["演艺/主持/活动/销售等需要感染力的台前工作","氛围热烈、互动频繁的团队","把产品和体验变得有趣的角色"],["为当下的快乐透支未来（钱/时间/身体）","逃避沉重话题，问题累积到爆才处理","被冷落和否定击中时，情绪波动极大"],"走到哪快乐就跟到哪的发电机","快乐是我的KPI，气氛是我的工位"],
+  ENFP:["竞选者","点燃他人的创意星","热情、好奇、点子多，善于看见人的潜力并激发出来。兴趣广但需防分散。",["点子怪","信你行","热乎劲"],"ENFP 擅长点燃他人，热情却容易撒得太广。挑一个最心动的方向连打三个月，你的广度会变成别人拿不走的纵深。","你是一颗自带引力的星：走到哪，人都愿意围过来。你看人的方式很特别——能在对方身上看到连他自己都没发现的潜力，并且真的把这份相信说出口。兴趣广、启动快，世界对你永远新鲜。",["创意/品牌/内容/培训等点燃他人的领域","变化多、互动多、禁止重复的项目","需要共情和煽动并存的角色"],["热情分散，十个坑每个挖三米","对重复性维护工作耐受度极低","被拒绝和冷落会深度影响自我价值感"],"自带引力真心点燃他人的小太阳","一生放纵爱自由，热情永不落灰"],
+  ENTP:["辩论家","点子炸裂的挑刺王","机智善辩，爱挑战假设、头脑风暴，享受智力交锋。点子多但需落地。",["脑速快","破想当然","越辩越明"],"ENTP 擅长挑战旧答案，却常把点子留在半空。动手前先找一个收尾搭档，或逼自己只保留一个项目，才华才有人看见。","你的大脑是个永不停歇的头脑风暴现场：任何「理所当然」到你这里都会被翻过来检查一遍。享受交锋带来的快感，观点对你不是立场，是玩具——但别误会，你真的相信「辩着辩着就更接近真相」。",["创新/咨询/产品/策略等需要破题的岗位","规则松动、鼓励试错的环境","智力交锋频繁、禁止沉闷的团队"],["挑战欲过强，容易把辩论变成人际摩擦","点子量产但落地率低，收尾是短板","对循规蹈矩缺乏基本尊重，容易误伤队友"],"点子多到溢出来的脑洞王者","拆台是本能，建设是选择"],
+  ESTJ:["总经理","高效果敢的统筹者","重视效率、规则与结果，天然擅长组织人与事、推动执行。可靠而有担当。",["混乱克星","推到底","兜底王"],"ESTJ 擅长推动执行拿到结果，却容易用力过猛。每周问自己一次「这件事非我不可吗」，授权和留白会让团队跑得更远。","你是人间自走的生产力引擎：混乱到你面前会自动排队，含糊的目标到你嘴里会自动变成甘特图。相信规则、结果和「该做的事就得做」——你的可靠，是团队敢把后背交给你的原因。",["管理/项目/运营等推动执行的角色","目标清晰、奖惩分明的组织","需要组织人和事、按节点交付的工作"],["对低效和情绪表达零容忍，容易显得强势","过度依赖既有经验，对新路径反应慢","把成功标准套在亲近的人身上，造成压力"],"说干就干必定交付的操盘手","效率即正义，拖延是七宗罪"],
+  ESFJ:["执政官","热心周到的黏合剂","重视人际和谐，乐于服务与照顾他人，是群体里的稳定器。细心而可靠。",["随叫随到","记人王","办事放心"],"ESFJ 擅长照顾关系和氛围，却太把评价当回事。被说「不够好」时先分清这是事实还是别人的看法，你的价值不靠满分运转。","你是人群里的恒温器：谁被忽略了、气氛僵在哪了、谁的杯子空了，你第一个察觉并动手。被需要是你的动力源——但请记住，你的价值不取决于有没有照顾好所有人。",["HR/行政/教务/客户成功等照顾人的岗位","氛围和谐、互动紧密的团队","组织活动、维系关系的角色"],["太在意评价，一句负面反馈能复盘一整晚","边界感模糊，把别人的事全背在身上","回避冲突到粉饰太平，问题延后爆发"],"把关系和气氛都稳住的暖心担当","有我在的地方，就不会有人被落下"],
+  ENFJ:["主人公","鼓舞人心的引领者","富有魅力与感染力，真心关心他人成长，善于把人凝聚到共同目标上。",["拧成绳","为你好","接得稳"],"ENFJ 擅长带人奔向目标，却容易把所有人的重量揽上身。每周留一次只对自己负责的时间，先照亮自己，才能长久照亮别人。","你有把「一群人」变成「一个团队」的天赋：让大家相信同一个方向，并且愿意为之使劲。你的关心不是客套，是认真记住每个人的处境后再决定怎么带。舞台中央的人，也常常是最后一个休息的。",["管理/教育/培训等带人成长的领域","需要凝聚共识、推动愿景的角色","人际互动密集、意义感强的工作"],["过度负责，把团队的重量全揽在自己肩上","为维持和谐回避必要的艰难对话","长期忽略自身需求，耗竭而不自知"],"天生带着人往前走的引领者","把所有人送上岸，自己最后一个上岸"],
+  ENTJ:["指挥官","目标驱动的统帅","目标感强、果敢有策略，天然承担领导与推动角色，享受把蓝图变现实。",["蓝图落地","扛得住","要结果"],"ENTJ 擅长把蓝图变成现实，速度却常常盖过别人的声音。重大决策前多问一句「你怎么看」，被听见的人会比KPI跑得更拼命。","你的世界里没有「做不到」，只有「路径还没找对」。目标一旦锁定，资源、人手、节奏会自动向你靠拢。你是那种把蓝图变成现实的人——过程可以不优雅，结果必须漂亮。",["创业/高管/战略/商务等目标驱动岗位","授权充分、以结果论英雄的环境","需要拍板、扛压、带队冲锋的角色"],["速度压倒一切，碾过队友的意见和情绪","对示弱过敏，关系停留在协作层","目标达成后，容易陷入短暂的意义虚空"],"说到做到的蓝图实现家","天生Leader，只是偶尔忘了人类需要休息"],
+};
+
+/* ---------- 16型分组与视觉主题 ---------- */
+const GROUPS = {
+  NT:{key:'NT',name:'分析家',c1:'#7c5cff',c2:'#4f46e5',types:['INTJ','INTP','ENTJ','ENTP']},
+  NF:{key:'NF',name:'外交家',c1:'#14b8a6',c2:'#0d9488',types:['INFJ','INFP','ENFJ','ENFP']},
+  SJ:{key:'SJ',name:'守护者',c1:'#3b82f6',c2:'#1d4ed8',types:['ISTJ','ISFJ','ESTJ','ESFJ']},
+  SP:{key:'SP',name:'探险家',c1:'#f59e0b',c2:'#ea580c',types:['ISTP','ISFP','ESTP','ESFP']},
+};
+const EMOJI = {ISTJ:'📋',ISFJ:'🌷',INFJ:'🔮',INTJ:'♟️',ISTP:'🔧',ISFP:'🎨',INFP:'🌙',INTP:'🔬',
+  ESTP:'🏄',ESFP:'🎤',ENFP:'🌟',ENTP:'⚡',ESTJ:'🗂️',ESFJ:'🤝',ENFJ:'🌈',ENTJ:'👑'};
+const groupOf = code => Object.values(GROUPS).find(g=>g.types.includes(code));
+
+/* ---------- 每型专属背景渐变 ---------- */
+const AVA_BG = {
+  INTJ:['#e6e2ff','#c9ccff'], INTP:['#eee7ff','#dcd4ff'], ENTJ:['#e2e6f8','#c7d2f5'], ENTP:['#f6e4ff','#ffd9e8'],
+  INFJ:['#ddf3ef','#cfe9ff'], INFP:['#f2e5ff','#ffdfee'], ENFJ:['#dcf5e8','#d2f0f5'], ENFP:['#ffefd0','#ffdae3'],
+  ISTJ:['#e0eaff','#cfdcf9'], ISFJ:['#f8ecdd','#ffe4d6'], ESTJ:['#dde9fb','#d3e2fa'], ESFJ:['#ffe8d9','#ffdbe4'],
+  ISTP:['#e3edf2','#d8e6ee'], ISFP:['#f6e4ef','#e5e0ff'], ESTP:['#fff0cf','#ffdfba'], ESFP:['#ffeed2','#ffdad2'],
+};
+
+/* ---------- 16 型专属画像：发型/发色/表情/配饰/道具 各不相同 ---------- */
+const AVATAR = {
+  INTJ:{hair:'sideSweep',hc:'#2e2a3a',eyes:'half',  mouth:'small',acc:'glasses', prop:'pawn'},
+  INTP:{hair:'messy',    hc:'#4a3f63',eyes:'round', mouth:'small',acc:'glasses', prop:'flask'},
+  ENTJ:{hair:'spiky',    hc:'#1f2233',eyes:'sharp', mouth:'smirk',acc:'',        prop:'chart'},
+  ENTP:{hair:'messy',    hc:'#5b3a4a',eyes:'wink',  mouth:'smirk',acc:'',        prop:'bolt'},
+  INFJ:{hair:'sideSweep',hc:'#3d3552',eyes:'round', mouth:'soft', acc:'',        prop:'book'},
+  INFP:{hair:'long',     hc:'#7a5c8a',eyes:'dreamy',mouth:'soft', acc:'flowerpin',prop:'moon'},
+  ENFJ:{hair:'ponytail', hc:'#4f3a66',eyes:'round', mouth:'smile',acc:'',        prop:'heart'},
+  ENFP:{hair:'long',     hc:'#c2703e',eyes:'sparkle',mouth:'open',acc:'',        prop:'star'},
+  ISTJ:{hair:'fringe',   hc:'#2f2f38',eyes:'round', mouth:'small',acc:'tie',     prop:'clipboard'},
+  ISFJ:{hair:'bun',      hc:'#6b4a3a',eyes:'round', mouth:'smile',acc:'',        prop:'flower'},
+  ESTJ:{hair:'fringe',   hc:'#33323b',eyes:'sharp', mouth:'small',acc:'tie',     prop:'trophy'},
+  ESFJ:{hair:'fringe',   hc:'#8a5a3a',eyes:'round', mouth:'smile',acc:'earrings',prop:'gift'},
+  ISTP:{hair:'fringe',   hc:'#26303a',eyes:'half',  mouth:'smirk',acc:'phones',  prop:'wrench'},
+  ISFP:{hair:'long',     hc:'#5a4a6e',eyes:'round', mouth:'soft', acc:'beret',   prop:'palette'},
+  ESTP:{hair:'spiky',    hc:'#d9a13f',eyes:'sharp', mouth:'open', acc:'cap',     prop:'target'},
+  ESFP:{hair:'long',     hc:'#d97742',eyes:'sparkle',mouth:'open',acc:'earrings',prop:'mic'},
+};
+
+function propSVG(kind, c){
+  const gold='#f6c344', pink='#ef6a8e', red='#e05c4a';
+  const P = {
+    pawn:`<g fill="${c}"><circle cy="-10" r="7"/><path d="M-7,12 C-7,-2 7,-2 7,12 Z"/><rect x="-10" y="12" width="20" height="5" rx="2.5"/></g>`,
+    flask:`<path d="M-4,-16 h8 v7 l8,14 a5,5 0 0 1 -4.5,7 h-15 a5,5 0 0 1 -4.5,-7 l8,-14 z" fill="#eef3fb" stroke="${c}" stroke-width="2.5"/><path d="M-8,0 l16,0 4.5,8 a4,4 0 0 1 -3.5,6 h-18 a4,4 0 0 1 -3.5,-6 z" fill="${c}" opacity=".55"/>`,
+    chart:`<g fill="${c}"><rect x="-14" y="-2" width="7" height="15" rx="2"/><rect x="-3.5" y="-8" width="7" height="21" rx="2"/><rect x="7" y="-14" width="7" height="27" rx="2"/><rect x="-16" y="15" width="34" height="3.5" rx="1.75" opacity=".4"/></g>`,
+    bolt:`<polygon points="3,-16 -10,3 -2,3 -5,16 10,-4 2,-4" fill="${gold}"/>`,
+    book:`<path d="M0,-9 C-6,-14 -14,-14 -17,-12 L-17,9 C-14,7 -6,7 0,11 C6,7 14,7 17,9 L17,-12 C14,-14 6,-14 0,-9 Z" fill="#fff" stroke="${c}" stroke-width="2.5"/><path d="M0,-9 L0,11" stroke="${c}" stroke-width="2.5"/>`,
+    moon:`<path d="M7,-15 A16,16 0 1 0 7,15 A13,13 0 1 1 7,-15 Z" fill="${gold}"/>`,
+    heart:`<path d="M0,13 C-15,3 -15,-10 -7,-12 C-3,-13 0,-10 0,-7 C0,-10 3,-13 7,-12 C15,-10 15,3 0,13 Z" fill="${pink}"/>`,
+    star:`<polygon points="0,-16 4.1,-5.7 15.2,-4.9 6.7,2.2 9.4,12.9 0,7 -9.4,12.9 -6.7,2.2 -15.2,-4.9 -4.1,-5.7" fill="${gold}"/>`,
+    clipboard:`<rect x="-11" y="-13" width="22" height="27" rx="3" fill="#fff" stroke="${c}" stroke-width="2.5"/><rect x="-5" y="-16" width="10" height="5" rx="2" fill="${c}"/><path d="M-6,-4 h12 M-6,2 h12 M-6,8 h8" stroke="#b9c2d6" stroke-width="2" stroke-linecap="round"/>`,
+    flower:`<g fill="#ff9db8"><circle cy="-7" r="4.6"/><circle cx="6.7" cy="-2.2" r="4.6"/><circle cx="4.1" cy="5.7" r="4.6"/><circle cx="-4.1" cy="5.7" r="4.6"/><circle cx="-6.7" cy="-2.2" r="4.6"/></g><circle r="4" fill="${gold}"/>`,
+    trophy:`<path d="M-9,-15 h18 v9 a9,9 0 0 1 -18,0 z" fill="${gold}"/><path d="M-9,-12 a7,7 0 1 0 -3,12 M9,-12 a7,7 0 1 1 3,12" stroke="${gold}" stroke-width="3" fill="none"/><rect x="-3.5" y="2" width="7" height="7" fill="#e0a92e"/><rect x="-9" y="9" width="18" height="5" rx="2.5" fill="#e0a92e"/>`,
+    gift:`<rect x="-12" y="-5" width="24" height="19" rx="3" fill="${pink}"/><rect x="-14" y="-11" width="28" height="7" rx="2.5" fill="#e0557e"/><rect x="-2" y="-11" width="4" height="25" fill="#ffd76e"/>`,
+    wrench:`<g transform="rotate(45)" fill="${c}"><circle cy="-9" r="6.5" fill="none" stroke="${c}" stroke-width="5"/><rect x="-3.2" y="-9" width="6.4" height="25" rx="3.2"/></g>`,
+    palette:`<ellipse rx="15" ry="12" fill="#f3ead9"/><circle cx="-4" cy="-9" r="3" fill="${red}"/><circle cx="5" cy="-10" r="3" fill="#4a90e2"/><circle cx="11" cy="-1" r="3" fill="${gold}"/><circle cx="-11" cy="1" r="3" fill="#57b884"/><circle cx="3" cy="9" r="3.5" fill="#8a6a4a"/><line x1="8" y1="6" x2="16" y2="15" stroke="#8a6a4a" stroke-width="3" stroke-linecap="round"/>`,
+    target:`<circle r="14" fill="none" stroke="${red}" stroke-width="4"/><circle r="6.5" fill="none" stroke="${red}" stroke-width="4"/><circle r="2" fill="${red}"/>`,
+    mic:`<rect x="-5.5" y="-15" width="11" height="18" rx="5.5" fill="${c}"/><path d="M-10,-3 a10,10 0 0 0 20,0" stroke="${c}" stroke-width="2.5" fill="none"/><line x1="0" y1="8" x2="0" y2="13" stroke="${c}" stroke-width="2.5"/><line x1="-6" y1="13" x2="6" y2="13" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>`,
+  };
+  return P[kind]||'';
+}
+
+function avatarSVG(code, grp){
+  const A = AVATAR[code], c = grp.c1, c2 = grp.c2, hc = A.hc;
+  const skin = '#ffdcc5', ink = '#4a4458';
+  const gid = 'g' + code;
+  const sp = s => `<path d="M0,-${s} L${(s*.28).toFixed(1)},-${(s*.28).toFixed(1)} L${s},0 L${(s*.28).toFixed(1)},${(s*.28).toFixed(1)} L0,${s} L-${(s*.28).toFixed(1)},${(s*.28).toFixed(1)} L-${s},0 L-${(s*.28).toFixed(1)},-${(s*.28).toFixed(1)} Z" fill="#ffd76e" stroke="#e0a92e" stroke-width="1"/>`;
+
+  // 太阳光芒背景
+  const rays = [0,72,144,216,288].map(a=>`<path d="M100,92 L52,-36 L148,-36 Z" fill="${c}" opacity=".07" transform="rotate(${a} 100 92)"/>`).join('');
+
+  // 后发（长发/马尾/丸子头额外加层）
+  let back = `<circle cx="100" cy="88" r="43" fill="${hc}" stroke="${ink}" stroke-width="2.5"/>`;
+  if(A.hair==='long') back += `<path d="M57,90 C57,48 143,48 143,90 L145,136 C145,145 131,145 131,136 L129,104 L71,104 L69,136 C69,145 55,145 55,136 Z" fill="${hc}" stroke="${ink}" stroke-width="2.5"/>`;
+  if(A.hair==='ponytail') back += `<ellipse cx="142" cy="116" rx="11" ry="30" fill="${hc}" stroke="${ink}" stroke-width="2.5" transform="rotate(16 142 116)"/>`;
+  if(A.hair==='bun') back += `<circle cx="100" cy="42" r="15" fill="${hc}" stroke="${ink}" stroke-width="2.5"/>`;
+
+  // 刘海（漫画描边）
+  const st = `stroke="${ink}" stroke-width="2.5" stroke-linejoin="round"`;
+  const FR = {
+    fringe:`<path d="M64,92 C63,60 137,60 136,92 C136,79 120,73 100,73 C80,73 64,79 64,92 Z" fill="${hc}" ${st}/>`,
+    sideSweep:`<path d="M64,94 C63,60 137,60 136,94 C133,80 126,86 106,81 C86,77 72,86 64,94 Z" fill="${hc}" ${st}/>`,
+    spiky:`<path d="M64,94 C63,58 137,58 136,94 L127,81 L119,94 L109,77 L100,91 L91,77 L81,94 L73,81 Z" fill="${hc}" ${st}/>`,
+    messy:`<path d="M64,95 C61,56 139,54 136,95 C129,81 121,89 111,78 C103,71 95,84 85,75 C75,70 69,85 64,95 Z" fill="${hc}" ${st}/>`,
+  };
+  const front = FR[A.hair] || FR.fringe;
+  const shine = `<path d="M76,68 C82,60 94,57 104,59" stroke="#fff" stroke-width="3.5" opacity=".45" fill="none" stroke-linecap="round"/>`;
+
+  // 眼睛
+  const EYE = {
+    round:`<circle cx="87" cy="98" r="4.8" fill="${ink}"/><circle cx="85.4" cy="96.3" r="1.8" fill="#fff"/><circle cx="89.3" cy="100.2" r="1" fill="#fff"/><circle cx="113" cy="98" r="4.8" fill="${ink}"/><circle cx="111.4" cy="96.3" r="1.8" fill="#fff"/><circle cx="115.3" cy="100.2" r="1" fill="#fff"/>`,
+    half:`<path d="M81,98 q6,3.5 12,0" stroke="${ink}" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M107,98 q6,3.5 12,0" stroke="${ink}" stroke-width="3.2" fill="none" stroke-linecap="round"/>`,
+    sparkle:`<circle cx="87" cy="98" r="5.2" fill="${ink}"/><circle cx="85" cy="96" r="2" fill="#fff"/><circle cx="89.6" cy="100.4" r="1.2" fill="#fff"/><circle cx="113" cy="98" r="5.2" fill="${ink}"/><circle cx="111" cy="96" r="2" fill="#fff"/><circle cx="115.6" cy="100.4" r="1.2" fill="#fff"/>`,
+    dreamy:`<circle cx="87" cy="98" r="5.8" fill="${ink}"/><circle cx="84.8" cy="95.8" r="2.2" fill="#fff"/><circle cx="89.6" cy="100.8" r="1.2" fill="#fff"/><circle cx="113" cy="98" r="5.8" fill="${ink}"/><circle cx="110.8" cy="95.8" r="2.2" fill="#fff"/><circle cx="115.6" cy="100.8" r="1.2" fill="#fff"/>`,
+    wink:`<circle cx="87" cy="98" r="4.8" fill="${ink}"/><circle cx="85.4" cy="96.3" r="1.8" fill="#fff"/><path d="M107,97 q6,-4 12,0" stroke="${ink}" stroke-width="3.2" fill="none" stroke-linecap="round"/>`,
+    sharp:`<circle cx="87" cy="99" r="4.6" fill="${ink}"/><circle cx="85.6" cy="97.5" r="1.5" fill="#fff"/><circle cx="113" cy="99" r="4.6" fill="${ink}"/><circle cx="111.6" cy="97.5" r="1.5" fill="#fff"/><path d="M79,89 L94,92.5 M121,89 L106,92.5" stroke="${ink}" stroke-width="3" stroke-linecap="round"/>`,
+  };
+  const brows = A.eyes==='sharp' ? '' :
+    `<path d="M80,88 q7,-4.5 14,-2" stroke="${ink}" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M106,86 q7,-2.5 14,2" stroke="${ink}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+
+  const MOUTH = {
+    smile:`<path d="M93,109 q7,7 14,0" stroke="#c46a4f" stroke-width="2.8" fill="none" stroke-linecap="round"/>`,
+    open:`<path d="M92,109 q8,11 16,0 z" fill="#b35a44"/><path d="M96,116 q4,4 8,0 z" fill="#e8837b"/>`,
+    small:`<path d="M97,112 q3,3 6,0" stroke="#c46a4f" stroke-width="2.8" fill="none" stroke-linecap="round"/>`,
+    smirk:`<path d="M94,112 q6,4.5 12,-1" stroke="#c46a4f" stroke-width="2.8" fill="none" stroke-linecap="round"/>`,
+    soft:`<path d="M96,111 q4,4.5 8,0" stroke="#c46a4f" stroke-width="2.8" fill="none" stroke-linecap="round"/>`,
+  };
+
+  // 配饰
+  let acc = '';
+  if(A.acc==='glasses') acc = `<circle cx="87" cy="98" r="10" fill="rgba(255,255,255,.25)" stroke="#3a3f52" stroke-width="2.6"/><circle cx="113" cy="98" r="10" fill="rgba(255,255,255,.25)" stroke="#3a3f52" stroke-width="2.6"/><path d="M97,98 h6 M77,96 L64,91 M123,96 L136,91" stroke="#3a3f52" stroke-width="2.6" fill="none"/>`;
+  if(A.acc==='beret') acc = `<g transform="rotate(-14 86 55)"><ellipse cx="86" cy="55" rx="26" ry="11.5" fill="#e05c4a" stroke="${ink}" stroke-width="2.5"/><circle cx="86" cy="43" r="3.2" fill="#c24737"/></g>`;
+  if(A.acc==='cap') acc = `<path d="M63,72 C63,45 137,45 137,72 Z" fill="#3b82f6" stroke="${ink}" stroke-width="2.5"/><rect x="129" y="66" width="19" height="9" rx="4.5" fill="#2f6fd8" stroke="${ink}" stroke-width="2"/>`;
+  if(A.acc==='flowerpin') acc = `<g transform="translate(69 61) scale(.9)">${propSVG('flower',c)}</g>`;
+  if(A.acc==='phones') acc = `<path d="M60,92 C58,45 142,45 140,92" stroke="#2b3040" stroke-width="6.5" fill="none"/><rect x="49" y="85" width="16" height="23" rx="7.5" fill="#2b3040"/><rect x="135" y="85" width="16" height="23" rx="7.5" fill="#2b3040"/>`;
+  if(A.acc==='earrings') acc = `<circle cx="61" cy="107" r="2.8" fill="#f6c344" stroke="#e0a92e"/><circle cx="139" cy="107" r="2.8" fill="#f6c344" stroke="#e0a92e"/>`;
+  const tie = A.acc==='tie' ? `<polygon points="100,151 94.5,158 100,177 105.5,158" fill="#8a3040" stroke="${ink}" stroke-width="1.6"/><polygon points="94.5,149 105.5,149 100,156" fill="#a03a4e" stroke="${ink}" stroke-width="1.6"/>` : '';
+
+  // 组装：背景 → 漂浮装饰 → 后发 → 脖子/身体 → 头 → 刘海/高光 → 配饰 → 表情 → 道具
+  return `<svg viewBox="0 0 200 200">
+    <defs>
+      <linearGradient id="${gid}b" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="${AVA_BG[code][0]}"/><stop offset="1" stop-color="${AVA_BG[code][1]}"/>
+      </linearGradient>
+      <linearGradient id="${gid}o" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="${c2}"/><stop offset="1" stop-color="${c}"/>
+      </linearGradient>
+    </defs>
+    <rect width="200" height="200" fill="url(#${gid}b)"/>
+    <circle cx="100" cy="96" r="88" fill="${c}" opacity=".08"/>
+    ${rays}
+    <circle cx="100" cy="96" r="62" fill="#fff" opacity=".5"/>
+    <g transform="translate(171 92)"><g class="av-spark">${sp(7)}</g></g>
+    <g transform="translate(170 40) scale(.85)"><g class="av-spark" style="animation-delay:.5s">${sp(7)}</g></g>
+    <g transform="translate(26 138) scale(.7)"><g class="av-spark" style="animation-delay:1s">${sp(7)}</g></g>
+    <g class="av-float"><circle cx="33" cy="45" r="14" fill="#fff" stroke="${c}" stroke-width="1.5"/><text x="33" y="50" text-anchor="middle" font-size="14">${EMOJI[code]}</text></g>
+    ${back}
+    <rect x="91" y="128" width="18" height="20" rx="7" fill="${skin}" stroke="${ink}" stroke-width="2.5"/>
+    <path d="M46,200 C46,160 70,146 100,146 C130,146 154,160 154,200 Z" fill="url(#${gid}o)" stroke="${ink}" stroke-width="2.5"/>
+    <path d="M91,146 L100,157 L109,146 Z" fill="#fff" stroke="${ink}" stroke-width="2"/>
+    ${tie}
+    <ellipse cx="100" cy="95" rx="36" ry="38" fill="${skin}" stroke="${ink}" stroke-width="2.5"/>
+    <circle cx="62" cy="98" r="7" fill="${skin}" stroke="${ink}" stroke-width="2"/><circle cx="138" cy="98" r="7" fill="${skin}" stroke="${ink}" stroke-width="2"/>
+    ${front}
+    ${shine}
+    ${acc}
+    ${brows}
+    ${EYE[A.eyes]}
+    <circle cx="74" cy="108" r="5.2" fill="#ffb3a0" opacity=".6"/><circle cx="126" cy="108" r="5.2" fill="#ffb3a0" opacity=".6"/>
+    ${MOUTH[A.mouth]}
+    <g class="av-prop"><circle cx="162" cy="156" r="26" fill="#fff" stroke="${c}" stroke-width="2" stroke-dasharray="5 4"/><g transform="translate(162 156)">${propSVG(A.prop, c)}</g></g>
+  </svg>`;
+}
+
+function radarSVG(rows, grp, code, name){
+  const cx=95, cy=95, R=66;
+  const BLUE='#4f9dff', BLUE_D='#2f7fe0';
+  const pt=(i,f)=>{const a=-Math.PI/2+i*Math.PI/2;return [cx+Math.cos(a)*R*f, cy+Math.sin(a)*R*f];};
+  const ring=f=>[0,1,2,3].map(i=>pt(i,f).map(n=>n.toFixed(1)).join(',')).join(' ');
+  const rings=[.25,.5,.75,1].map(f=>`<polygon points="${ring(f)}" fill="none" stroke="#dfe4ee" stroke-width="1"/>`).join('');
+  const spokes=[0,1,2,3].map(i=>{const[x,y]=pt(i,1);
+    return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#dfe4ee" stroke-width="1"/>`;}).join('');
+  const frac=r=>(r.domPct-40)/60;
+  // 中心 → 顶点：蓝色指示线
+  const rays=[0,1,2,3].map(i=>{const[x,y]=pt(i,frac(rows[i]));
+    return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="${BLUE}" stroke-width="2.4" stroke-linecap="round" opacity=".65"/>`;}).join('');
+  // 数据多边形：半透明淡蓝填充
+  const poly=`<polygon points="${[0,1,2,3].map(i=>pt(i,frac(rows[i])).map(n=>n.toFixed(1)).join(',')).join(' ')}"
+    fill="rgba(109,179,255,.22)" stroke="${BLUE}" stroke-width="2.6" stroke-linejoin="round"
+    style="transform-origin:95px 95px;animation:radarIn .8s ease"/>`;
+  const dots=[0,1,2,3].map(i=>{const[x,y]=pt(i,frac(rows[i]));
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="${BLUE}" stroke="#fff" stroke-width="2"/>`;}).join('');
+  // 中心徽章：大字类型码 + 小字人格名
+  const center=`<circle cx="${cx}" cy="${cy}" r="27" fill="#ffffff" opacity=".95"/>
+    <text x="${cx}" y="${cy-1}" text-anchor="middle" font-size="12.5" font-weight="900"
+      fill="${BLUE_D}" font-family="inherit">${code}</text>
+    ${name?`<text x="${cx}" y="${cy+11.5}" text-anchor="middle" font-size="8.6" font-weight="800"
+      fill="#8a93ad" font-family="inherit">${name}</text>`:''}`;
+  // 轴端：胜出字母加粗深蓝 + 真实百分比；落侧浅灰弱化（第二行小字）
+  const L=[['E','I'],['S','N'],['T','F'],['J','P']];
+  const labels=L.map((pr,i)=>{const[x,y]=pt(i,1.12);
+    const wi = rows[i].dom===rows[i].leftLab.slice(-1)?0:1;
+    const y1 = i===0?14:(i===2?172:96), y2 = y1+13;
+    return `<text x="${x.toFixed(1)}" y="${y1}" text-anchor="middle">
+      <tspan fill="${BLUE_D}" font-weight="900" font-size="12.5">${pr[wi]}</tspan>
+      <tspan fill="#8a93ad" font-weight="800" font-size="10"> ${rows[i].winPct}%</tspan>
+      <tspan x="${x.toFixed(1)}" y="${y2}" fill="#b7c0d2" font-weight="700" font-size="10.5">· ${pr[1-wi]}</tspan></text>`;}).join('');
+  return `<svg class="radar-svg" width="216" height="216" viewBox="0 0 190 190">${rings}${spokes}${rays}${poly}${dots}${center}${labels}</svg>`;
+}
+
+/* ---------- 状态 ---------- */
+let Qorder = [];
+let QorderIdx = [];   // 乱序后的题库下标（用于断点续答存档）
+let cur = 0;
+let answers = [];
+let LAST_DIMS = null; // 最近一次结果的四维摘要 [{lab,pct}]
+const SAVE_KEY = 'mbti16_quiz_v1';
+/* 进度条五段天然递进色（甜系）：粉 → 玫红 → 紫 → 薰衣草 → 暖金（每 10 题推进一段） */
+const BAR_GRAD = {
+  1:'linear-gradient(90deg,#ff9ad5,#ff7ec0)',
+  2:'linear-gradient(90deg,#ff7ec0,#c98bff)',
+  3:'linear-gradient(90deg,#c98bff,#a07bff)',
+  4:'linear-gradient(90deg,#a07bff,#ff9ad5)',
+  5:'linear-gradient(90deg,#ff9ad5,#ffd166)'
+};
+const BAR_GLOW = {
+  1:'rgba(255,154,213,.65)', 2:'rgba(255,126,192,.6)', 3:'rgba(201,139,255,.6)',
+  4:'rgba(160,123,255,.6)', 5:'rgba(255,190,110,.65)'
+};
+const BAR_TXT = {
+  1:'#ffb3df', 2:'#ff9ad5', 3:'#c9a3ff', 4:'#b9a0ff', 5:'#ffd98a'
+};
+const HINTS = [
+  '✨ 凭第一直觉选，不用想太久',
+  '🌿 没有好坏答案，只看你的倾向',
+  '⏱ 约 8 分钟就能完成，很快',
+  '💡 想到什么选什么，直觉最准',
+  '🎈 放松，这不是考试',
+  '⭐ 答案只代表此刻的你，允许改变',
+  '🫧 顺着感受走，别过度分析'
+];
+
+const $ = id => document.getElementById(id);
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');window.scrollTo(0,0);}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* 断点续答：读写本地进度 */
+function saveState(){
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify({v:1,order:QorderIdx,answers:answers,cur:cur}));}catch(e){}
+}
+function clearSaved(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}}
+function loadSaved(){
+  try{
+    const s=JSON.parse(localStorage.getItem(SAVE_KEY));
+    if(s && s.v===1 && Array.isArray(s.order) && s.order.length===BANK.length
+       && Array.isArray(s.answers) && s.answers.length===BANK.length
+       && typeof s.cur==='number' && s.cur>=0 && s.cur<s.order.length
+       && s.answers.some(v=>v!=null) && s.answers.some(v=>v==null)) return s;
+  }catch(e){}
+  return null;
+}
+function replay(id){const el=$(id);if(!el)return;el.classList.remove('q-enter');void el.offsetWidth;el.classList.add('q-enter');}
+
+function startTest(){
+  clearSaved();
+  $('resumeBar').classList.remove('show');
+  const idx = shuffle(BANK.map((_,i)=>i));
+  startFrom(idx, new Array(BANK.length).fill(null), 0);
+}
+
+function startFrom(orderIdx, ans, c){
+  QorderIdx = orderIdx;
+  Qorder = orderIdx.map(i=>BANK[i]);
+  answers = ans;
+  cur = c;
+  document.querySelector('.app').classList.add('in-quiz');
+  renderQ();
+  show('quiz');
+}
+
+function renderQ(){
+  const item = Qorder[cur];
+  $('qcount').textContent = `第 ${cur+1} / ${Qorder.length} 题`;
+  $('qtext').textContent = item.q;
+  // 随机鼓励/提示文案，每题不同，缓解畏难
+  $('qhint').textContent = HINTS[Math.floor(Math.random()*HINTS.length)];
+  // 里程碑彩蛋：按进度点亮的星星数，每段文案 + 专属配色都不同
+  if(cur > 0 && cur % 10 === 0){
+    const MSGS = {
+      10:'✨ 点亮 10 颗星 — 启航坐标锁定，旅程正式开始！',
+      20:'🌟 20 颗星就位 — 航线渐次清晰，你比想象中认真～',
+      30:'💫 30 颗星连成骨架 — 轮廓已浮现，再撑一下！',
+      40:'🌌 40 颗星闪耀 — 人格地图只剩最后一块拼图！'
+    };
+    // 每个里程碑弹窗用专属配色，刻意避开四个组的选项渐变（紫/青/蓝/橙），不撞色
+    const TONE = {
+      10:{bg:'linear-gradient(135deg,#ffcf6b,#ff8a5b)', glow:'rgba(255,138,91,.55)'}, // 启航·暖金
+      20:{bg:'linear-gradient(135deg,#ff6fae,#c44bff)', glow:'rgba(196,75,255,.5)'},  // 航线·玫紫
+      30:{bg:'linear-gradient(135deg,#3ad7c4,#37b6ff)', glow:'rgba(55,182,255,.5)'},  // 轮廓·青蓝
+      40:{bg:'linear-gradient(135deg,#b06bff,#ff5e9c)', glow:'rgba(255,94,156,.55)'}  // 拼图·幻彩
+    };
+    const tone = TONE[cur] || {bg:'linear-gradient(135deg,#9aa7ff,#ff9ad5)', glow:'rgba(154,167,255,.5)'};
+    const t = $('mtoast');
+    t.textContent = MSGS[cur] || `✨ 已点亮 ${cur} 颗星！`;
+    t.style.background = tone.bg;
+    t.style.boxShadow = `0 8px 22px ${tone.glow}`;
+    t.classList.add('show');
+    clearTimeout(t._h);
+    t._h = setTimeout(()=>t.classList.remove('show'), 1900);
+  }
+  const optsHtml = SCALE.map((s,i)=>{
+    const sel = answers[cur]===s.v ? 'sel' : '';
+    return `<div class="opt ${sel}" onclick="pick(${s.v})"><span class="opt-idx">${'ABCDE'[i]}</span><span>${s.t}</span></div>`;
+  }).join('');
+  $('opts').innerHTML = optsHtml;
+  // 进度：行内细进度条 + 百分比
+  const pct = Math.round(cur/Qorder.length*100);
+  $('prog').style.width = pct + '%';
+  $('qpct').textContent = pct + '%';
+  // 进度条五段天然递进：每 10 题推进一段色相（青蓝→蓝紫→紫→粉→暖金）
+  const stage = Math.min(5, Math.floor(cur/10)+1);
+  $('prog').style.background = BAR_GRAD[stage];
+  $('prog').style.boxShadow = '0 0 10px ' + BAR_GLOW[stage];
+  $('qpct').style.color = BAR_TXT[stage];
+  // 下一题：未选择答案前禁用，选中才激活
+  $('nextBtn').disabled = answers[cur]==null;
+  $('nextBtn').textContent = (cur===Qorder.length-1) ? '查看结果' : '下一题';
+  // 上一题按钮：首题变为轻量「返回首页」，其余为「上一题」可回改
+  const bb = $('backBtn');
+  bb.style.visibility = 'visible';
+  if(cur===0){
+    bb.classList.add('home');
+    bb.style.flex = '0 0 auto';
+    bb.innerHTML = '<i class="bk-arrow">‹</i>返回首页';
+    bb.setAttribute('onclick','goHome()');
+  }else{
+    bb.classList.remove('home');
+    bb.style.flex = '1';
+    bb.textContent = '上一题';
+    bb.setAttribute('onclick','prevQ()');
+  }
+  // 题目转场：轻柔淡入上浮
+  replay('qtext'); replay('qhint'); replay('opts');
+  // 保存进度，支持中途退出后续答
+  saveState();
+}
+
+function pick(v){answers[cur]=v;renderQ();}
+function prevQ(){if(cur>0){cur--;renderQ();}}
+/* 首题的「返回首页」：保留作答进度，首页显示续答横幅 */
+function goHome(){
+  document.querySelector('.app').classList.remove('in-quiz');
+  show('start');
+  const sv = loadSaved();
+  if(sv){
+    $('resumeIdx').textContent = sv.cur+1;
+    $('resumeBar').classList.add('show');
+  }
+}
+function nextQ(){
+  if(answers[cur]==null){alert('请先选择一个符合程度');return;}
+  if(cur<Qorder.length-1){cur++;renderQ();}
+  else{calculate();}
+}
+
+function strengthOf(pct){
+  // pct = 主导极占比（50~100）
+  if(pct>=85) return {cls:'s1',txt:'强烈偏向'};
+  if(pct>=70) return {cls:'s2',txt:'明显偏向'};
+  if(pct>=55) return {cls:'s3',txt:'轻微偏向'};
+  return {cls:'s4',txt:'特质灵活'};
+}
+
+function calculate(){
+  const scores = {E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
+  Qorder.forEach((it,i)=>{
+    const r = answers[i];
+    if(r==null) return;
+    scores[it.pole] += r;                 // 题干描述的极：同意度直接计入
+    scores[ opposite(it.pole) ] += (6-r); // 相反极：反向计分
+  });
+
+  const codeLetters = [];
+  const dimRows = [];
+  let balancedCount = 0;
+  ['EI','SN','TF','JP'].forEach(key=>{
+    const [pA,pB] = DIMCFG[key].poles;
+    const tot = scores[pA] + scores[pB];          // 恒为 8*6=48
+    const pctA = Math.round(scores[pA]/tot*100);
+    const dom = scores[pA] >= scores[pB] ? pA : pB;
+    const domPct = Math.max(pctA, 100-pctA);
+    const balanced = domPct < 55;
+    if(balanced) balancedCount++;
+    codeLetters.push(dom);
+    const st = strengthOf(domPct);
+    dimRows.push({
+      name:DIMCFG[key].name, leftLab:DIMCFG[key].labels[0], rightLab:DIMCFG[key].labels[1],
+      leftScore:scores[pA], rightScore:scores[pB], pctA,
+      dom, domPct, st, balanced
+    });
+  });
+
+  const code = codeLetters.join('');
+  const info = TYPE_INFO[code];
+  const grp = groupOf(code);
+
+  // 按类型组切换主题色
+  const app = document.querySelector('.app');
+  app.classList.remove('g-NT','g-NF','g-SJ','g-SP');
+  app.classList.add('g-'+grp.key);
+  // 整卡背景随类型渐变
+  app.style.setProperty('--rbg1', AVA_BG[code][0]);
+  app.style.setProperty('--rbg2', AVA_BG[code][1]);
+  app.classList.remove('in-quiz');
+  app.classList.add('themed');
+
+  $('tgroup').textContent = grp.name;
+  $('code').textContent = code;
+  $('tname').textContent = info[0];
+  $('ttag').textContent = info[9];
+  $('tdesc').textContent = info[2];
+  const hero = $('hero');
+  const avBox = $('avatarBox');
+  hero.classList.remove('pop'); avBox.classList.remove('pop');
+  void hero.offsetWidth;
+  hero.classList.add('pop'); avBox.classList.add('pop');
+  avBox.innerHTML = avatarSVG(code, grp);
+  $('chips').innerHTML = info[3].map(s=>
+    `<span class="chip" style="color:${grp.c1};background:${grp.c1}14;border:1px solid ${grp.c1}33">${s}</span>`).join('');
+  // 四维摘要缓存（分享弹窗/海报取用）
+  LAST_DIMS = dimRows.map(r=>({lab:r.dom, pct: r.dom===r.leftLab.slice(-1) ? r.pctA : 100-r.pctA}));
+  // 人格解读三模块：特质 / 适合场景 / 容易踩坑的短板
+  $('rtTrait').textContent = info[5];
+  $('rtScene').innerHTML = info[6].map(s=>'<li>'+s+'</li>').join('');
+  $('rtWeak').innerHTML = info[7].map(s=>'<li>'+s+'</li>').join('');
+  $('tip').innerHTML = '<b>💡 成长小贴士</b>' + info[4];
+
+  // 图形夸张显示：把 50% 附近的差距放大 3 倍，倾向一眼可辨（数字仍标真实比例）
+  const AMP = 3;
+  const disp = p => Math.min(97, Math.max(3, 50 + (p - 50) * AMP));
+
+  const radarRows = dimRows.map(r=>{
+    const pctR = 100 - r.pctA;
+    return {domPct:disp(r.domPct), dom:r.dom, leftLab:r.leftLab, rightLab:r.rightLab,
+      winPct: r.dom===r.leftLab.slice(-1) ? r.pctA : pctR};
+  });
+  $('radarWrap').innerHTML = radarSVG(radarRows, grp, code, info[0]) +
+    `<div class="radar-note">离中心越远，代表该人格倾向越强</div>`;
+
+  $('dims').innerHTML = dimRows.map(r=>{
+    const pctR = 100 - r.pctA;
+    const winL = r.dom === r.leftLab.slice(-1);
+    const badge = r.balanced
+      ? '<i class="dbal">特质灵活</i>'
+      : '<i class="dstr">' + r.st.txt + '</i>';
+    const gradW = `linear-gradient(90deg,${grp.c1},${grp.c2})`;
+    const fillL = winL ? `background:${gradW}` : 'background:#e2e8f3';
+    const fillR = winL ? 'background:#e2e8f3' : `background:${gradW}`;
+    return `
+    <div class="dim">
+      <div class="dim-head">
+        <span class="pole ${winL?'win':''}">${r.leftLab}<b>${r.pctA}%</b></span>
+        <span class="dname">${r.name}${badge}</span>
+        <span class="pole ${winL?'':'win'}"><b>${pctR}%</b>${r.rightLab}</span>
+      </div>
+      <div class="track">
+        <i class="fillL" style="${fillL}" data-w="${(disp(r.pctA)/2).toFixed(1)}"></i>
+        <i class="fillR" style="${fillR}" data-w="${(disp(pctR)/2).toFixed(1)}"></i>
+        <div class="mid"></div>
+      </div>
+    </div>`;
+  }).join('');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    document.querySelectorAll('#dims .track > i').forEach(el=>{el.style.width=el.dataset.w+'%';});
+  }));
+
+  // 有效性提示：中立过多 / 全选同一档（正反抵消）/ 多维度特质灵活
+  const validEl = $('valid');
+  const cnt = {}; answers.forEach(v=>cnt[v]=(cnt[v]||0)+1);
+  const midRatio  = (cnt[3]||0)/answers.length;
+  const highRatio = ((cnt[4]||0)+(cnt[5]||0))/answers.length;
+  const lowRatio  = ((cnt[1]||0)+(cnt[2]||0))/answers.length;
+  if(midRatio > 0.6){
+    validEl.className = 'valid';
+    validEl.style.display='block';
+    validEl.textContent='提示：你有 '+Math.round(midRatio*100)+'% 的题选了「中立」，结果参考性较低。建议按真实感受重新作答一次。';
+  } else if((highRatio>0.75 || lowRatio>0.75) && balancedCount>=2){
+    validEl.className = 'valid';
+    validEl.style.display='block';
+    validEl.textContent='提示：你绝大多数题都选了同一档（'
+      +(highRatio>0.75?'符合':'不符合')+'）。本量表正反题各半，同一档的作答会相互抵消，所以各维度都偏向「特质灵活」。'
+      +'请对照每题的具体内容、按符合程度打分，再测一次会得到更有区分度的结果。';
+  } else if(balancedCount>=2){
+    validEl.className = 'valid pos';
+    validEl.style.display='block';
+    validEl.textContent='提示：你有 '+balancedCount+' 个维度倾向不明显，属于灵活型人格，在不同场景可以切换两种特质，适配力更强。状态变化时，类型可能发生浮动。';
+  } else {
+    validEl.style.display='none';
+  }
+
+  $('prog').style.width='100%';
+  if($('qpct')) $('qpct').textContent='100%';
+  clearSaved();
+  show('result');
+}
+
+function opposite(p){
+  return ({E:'I',I:'E',S:'N',N:'S',T:'F',F:'T',J:'P',P:'J'})[p];
+}
+
+/* 首页天头：星尘流动 + 2 条流星 + 16 头像魔法阵环绕中央插画 */
+(function(){
+  // 细碎星尘：随机点位 / 大小 / 速度 / 漂移方向，缓慢上浮 + 明灭
+  const box = document.getElementById('stardust');
+  if(box){
+    let html='';
+    for(let i=0;i<48;i++){
+      const sz=(Math.random()*1.8+1).toFixed(1);
+      const x=(Math.random()*100).toFixed(2), y=(Math.random()*100).toFixed(2);
+      const dx=(Math.random()*24-12).toFixed(1), dy=(-(Math.random()*50+20)).toFixed(1);
+      const dur=(Math.random()*10+8).toFixed(1), tw=(Math.random()*3+2).toFixed(1);
+      const del=(-Math.random()*12).toFixed(1);
+      const c=Math.random()<.18?'#ffe9b8':(Math.random()<.15?'#bfd6ff':'#ffffff');
+      html+=`<i class="sd-dot" style="left:${x}%;top:${y}%;width:${sz}px;height:${sz}px;background:${c};--dx:${dx}px;--dy:${dy}px;animation-duration:${dur}s,${tw}s;animation-delay:${del}s,${del}s;box-shadow:0 0 ${(sz*3).toFixed(1)}px ${c}"></i>`;
+    }
+    box.insertAdjacentHTML('afterbegin',html);
+  }
+  // 16 头像环绕轨道：等角分布，头像保持正立
+  const orbit = document.getElementById('orbit');
+  if(orbit){
+    const codes = Object.values(GROUPS).flatMap(g=>g.types);
+    const R = 92;
+    orbit.innerHTML = codes.map((code,i)=>{
+      const a=(360/codes.length)*i, g=groupOf(code);
+      return `<div class="orb-pos" style="transform:rotate(${a}deg) translate(${R}px) rotate(${-a}deg)"><div class="orb" style="--d:${(i*0.2).toFixed(2)}s" onclick="pickAva('${code}')">${avatarSVG(code,g)}</div></div>`;
+    }).join('');
+  }
+})();
+
+/* 首页 16 人格头像墙：默认隐藏，首次展开折叠区时才渲染 */
+let _wallBuilt = false;
+window.pickAva = function(code){
+  const g = groupOf(code), info = TYPE_INFO[code];
+  document.querySelectorAll('.wall-ava').forEach(e=>e.classList.toggle('on', e.dataset.code===code));
+  const card = $('amCard');
+  card.style.setProperty('--c', g.c1);
+  $('amAva').innerHTML = avatarSVG(code, g);
+  $('amCode').textContent = code;
+  $('amName').textContent = info[0] + ' · ' + info[1];
+  $('amGrp').textContent = EMOJI[code] + ' ' + g.name + '族';
+  $('amDesc').textContent = info[2];
+  $('amTags').innerHTML = info[3].map(s=>`<span>${s}</span>`).join('');
+  $('avaModal').classList.add('show');
+};
+window.closeAva = function(){ $('avaModal').classList.remove('show'); };
+function buildWall(){
+  if(_wallBuilt) return;
+  const wall = document.getElementById('avaWall');
+  const order = [];
+  Object.values(GROUPS).forEach(g=>g.types.forEach(t=>order.push([t,g])));
+  wall.innerHTML = order.map(([t,g],i)=>
+    `<div class="wall-ava" data-code="${t}" style="--c:${g.c1};--d:${(i*0.12).toFixed(2)}s"
+      onclick="pickAva('${t}')"><div class="wa-in">${avatarSVG(t,g)}</div></div>`).join('');
+  _wallBuilt = true;
+}
+function togglePreview(){
+  const body = document.getElementById('previewBody');
+  const tg = document.getElementById('prevToggle');
+  buildWall();
+  const open = body.classList.toggle('open');
+  tg.classList.toggle('open', open);
+  tg.querySelector('span').textContent = open ? '收起 16 种人格预览' : '查看 16 种人格预览';
+}
+
+function restart(){
+  document.querySelector('.app').classList.remove('themed','in-quiz');
+  if(window.closeAva) closeAva();
+  clearSaved();
+  $('resumeBar').classList.remove('show');
+  show('start');
+}
+window.resumeQuiz = function(){
+  const sv = loadSaved();
+  if(!sv) return;
+  $('resumeBar').classList.remove('show');
+  document.querySelector('.app').classList.remove('themed');
+  startFrom(sv.order, sv.answers, sv.cur);
+};
+window.resetQuiz = function(){
+  clearSaved();
+  $('resumeBar').classList.remove('show');
+  startTest();
+};
+/* 初始化：有未完成进度时，首页显示续答横幅 */
+(function(){
+  const sv = loadSaved();
+  if(sv){
+    $('resumeIdx').textContent = sv.cur+1;
+    $('resumeBar').classList.add('show');
+  }
+})();
+
+function shareResult(){
+  const code = $('code').textContent;
+  const info = TYPE_INFO[code];
+  const grp = groupOf(code);
+  const modal = $('shareModal');
+  modal.style.setProperty('--c', grp.c1);
+  $('smAva').innerHTML = avatarSVG(code, grp);
+  $('smType').innerHTML = '<span class="sm-code">' + code + '</span>｜<span class="sm-nick">' + info[0] + '</span>';
+  $('smGlow').textContent = '“' + info[9] + '”';
+  $('smChips').innerHTML = info[3].map(s=>
+    `<span style="color:${grp.c1};background:${grp.c1}18;border:1.5px solid ${grp.c1}4d">${s}</span>`).join('');
+  $('smDims').innerHTML = (LAST_DIMS||[]).map(d=>`<span>${d.lab}<b>${d.pct}%</b></span>`).join('');
+  modal.classList.add('show');
+}
+function closeShare(){ $('shareModal').classList.remove('show'); }
+function closePoster(){ $('posterLayer').classList.remove('show'); }
+
+/* ---------- 海报绘制：canvas 重绘弹窗内容，天然不含「取消」按钮 ---------- */
+function savePoster(){
+  const code = $('code').textContent;
+  const info = TYPE_INFO[code];
+  const grp = groupOf(code);
+  const W = 600, H = 880;
+  const cv = document.createElement('canvas');
+  cv.width = W * 2; cv.height = H * 2;
+  const ctx = cv.getContext('2d');
+  ctx.scale(2, 2);
+  const roundRect = (x, y, w, h, r) => {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  };
+  const wrapText = (t, x, y, maxW, lh) => {
+    let line = '', yy = y;
+    for(const ch of t){
+      if(ctx.measureText(line + ch).width > maxW && line){ ctx.fillText(line, x, yy); line = ch; yy += lh; }
+      else line += ch;
+    }
+    ctx.fillText(line, x, yy);
+    return yy;
+  };
+  // 背景：淡紫三段渐变 + 装饰圆环 + 星尘
+  const bg = ctx.createLinearGradient(0, 0, W * .4, H);
+  bg.addColorStop(0, '#efe7ff'); bg.addColorStop(.52, '#e6dbff'); bg.addColorStop(1, '#ffe6f2');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  ctx.globalAlpha = .14;
+  [['#7c5cff', 528, 92, 130], ['#ff8ad5', 52, 310, 150], ['#5ec8ff', 552, 640, 120]].forEach(d=>{
+    ctx.strokeStyle = d[0]; ctx.lineWidth = 24;
+    ctx.beginPath(); ctx.arc(d[1], d[2], d[3], 0, Math.PI * 2); ctx.stroke();
+  });
+  ctx.globalAlpha = 1;
+  [[40,72,3],[92,185,2],[520,96,3.5],[562,205,2],[70,430,2.5],[548,436,3],[150,790,2.5],[470,812,2],[302,40,2],[36,620,3],[572,610,2.5],[120,60,2]].forEach(s=>{
+    ctx.fillStyle = 'rgba(255,255,255,.85)';
+    ctx.beginPath(); ctx.arc(s[0], s[1], s[2], 0, Math.PI * 2); ctx.fill();
+  });
+  // 白卡 + 卡内淡紫星云 + 虚线内框
+  roundRect(26, 26, W - 52, H - 52, 46);
+  ctx.fillStyle = '#fdfcff'; ctx.fill();
+  ctx.save();
+  roundRect(26, 26, W - 52, H - 52, 46); ctx.clip();
+  const nb = ctx.createRadialGradient(300, 150, 10, 300, 150, 340);
+  nb.addColorStop(0, 'rgba(140,92,255,.10)'); nb.addColorStop(1, 'rgba(140,92,255,0)');
+  ctx.fillStyle = nb; ctx.fillRect(26, 26, W - 52, H - 52);
+  [[120,120,2],[480,110,2.4],[90,300,2],[520,320,2.2],[70,700,2],[540,690,2.4],[300,30,1.8],[180,80,1.6],[430,66,1.8]].forEach(s=>{
+    ctx.fillStyle = 'rgba(140,110,220,.22)';
+    ctx.beginPath(); ctx.arc(s[0], s[1], s[2], 0, Math.PI * 2); ctx.fill();
+  });
+  ctx.restore();
+  ctx.strokeStyle = 'rgba(140,110,220,.28)'; ctx.lineWidth = 2; ctx.setLineDash([7, 7]);
+  roundRect(33, 33, W - 66, H - 66, 40); ctx.stroke(); ctx.setLineDash([]);
+  // 利益点：虚线框 + 居中两行文案（与弹窗 sm-perk 完全一致）
+  const py = 620, ph = 96;
+  roundRect(58, py, W - 116, ph, 26);
+  ctx.fillStyle = '#f6f2ff'; ctx.fill();
+  ctx.strokeStyle = 'rgba(140,110,220,.26)'; ctx.lineWidth = 2; ctx.setLineDash([7, 7]); ctx.stroke(); ctx.setLineDash([]);
+  // 以下文字的 x 坐标均为「中心点」，必须显式居中对齐（否则默认左对齐会让文字从中心向右溢出）
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#2e2848'; ctx.font = '800 18px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillText('\u2705 50\u9898\u4e13\u4e1a\u6d4b\u8bc4\uff5c\u751f\u6210\u4e13\u5c5eSVG\u4eba\u8bbe\u5934\u50cf', W/2, py + 34);
+  ctx.fillText('\u5b8c\u6574\u4eba\u683c\u5206\u6790\u62a5\u544a', W/2, py + 66);
+  // 钩子 + 底部 CTA（主题色，与弹窗主按钮呼应）
+  ctx.fillStyle = '#8f87ad'; ctx.font = '800 17px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillText('\ud83e\udd2d \u628a\u4f60\u7684\u4eba\u683c\u5206\u4eab\u7ed9\u597d\u53cb\uff0c\u770b\u770b\u4f60\u4eec\u7684\u4eba\u683c\u642d\u914d', W/2, 754);
+  ctx.fillStyle = grp.c1; ctx.font = '900 17px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillText('\ud83d\udc49 MBTI16\u578b\u4eba\u683c\u6d4b\u8bc4 \u00b7 \u70b9\u6211\u6d4b\u6d4b\u4f60\u662f\u54ea\u79cd\u4eba\u683c', W/2, 786);
+  // 头像（光芒 + 双层光环 + 四角星）
+  let svg = avatarSVG(code, grp);
+  if(!/^<svg[^>]+\swidth=/.test(svg)) svg = svg.replace('<svg ', '<svg width="400" height="400" ');
+  if(!/xmlns=/.test(svg)) svg = svg.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
+  const img = new Image();
+  img.onload = ()=>{
+    const AS = 192, ax = (W - AS) / 2, ay = 124, ccx = W/2, ccy = ay + AS/2;
+    // 八束放射光芒（奇偶长短交替）
+    ctx.save(); ctx.globalAlpha = .5; ctx.strokeStyle = grp.c1; ctx.lineWidth = 3.5; ctx.lineCap = 'round';
+    for(let i = 0; i < 8; i++){
+      const a = -Math.PI/2 + i * Math.PI/4;
+      const r1 = AS/2 + 36, r2 = AS/2 + (i % 2 ? 52 : 62);
+      ctx.beginPath();
+      ctx.moveTo(ccx + Math.cos(a) * r1, ccy + Math.sin(a) * r1);
+      ctx.lineTo(ccx + Math.cos(a) * r2, ccy + Math.sin(a) * r2);
+      ctx.stroke();
+    }
+    ctx.restore();
+    ctx.fillStyle = grp.c1 + '14';
+    ctx.beginPath(); ctx.arc(ccx, ccy, AS/2 + 28, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = grp.c1 + '33'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(ccx, ccy, AS/2 + 28, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.75)';
+    ctx.beginPath(); ctx.arc(ccx, ccy, AS/2 + 16, 0, Math.PI * 2); ctx.fill();
+    const star = (sx, sy, r, color, alpha) => {
+      ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy - r); ctx.quadraticCurveTo(sx, sy, sx + r, sy);
+      ctx.quadraticCurveTo(sx, sy, sx, sy + r); ctx.quadraticCurveTo(sx, sy, sx - r, sy);
+      ctx.quadraticCurveTo(sx, sy, sx, sy - r);
+      ctx.fill(); ctx.restore();
+    };
+    star(ccx - AS/2 - 30, ccy - AS/2 - 4, 9, '#ffd76e', .95);
+    star(ccx + AS/2 + 34, ccy - AS/2 + 6, 11, '#ffd76e', .95);
+    star(ccx + AS/2 + 20, ccy + AS/2 + 16, 7, '#fff', .9);
+    star(ccx - AS/2 - 24, ccy + AS/2 + 18, 8, '#fff', .85);
+    roundRect(ax, ay, AS, AS, 44);
+    ctx.fillStyle = '#ffffff'; ctx.fill();
+    ctx.save();
+    roundRect(ax + 5, ay + 5, AS - 10, AS - 10, 40); ctx.clip();
+    ctx.drawImage(img, ax + 5, ay + 5, AS - 10, AS - 10);
+    ctx.restore();
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 5;
+    roundRect(ax, ay, AS, AS, 44); ctx.stroke();
+    // kicker 胶囊（移到头像装饰之后绘制：光芒/光晕从胶囊后方穿过，不再压穿胶囊）
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = '900 21px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+    const kText = '\u2726 \u2726 \u5206\u4eab\u6211\u7684\u6d4b\u8bc4\u7ed3\u679c \u2726 \u2726';
+    const kw = ctx.measureText(kText).width + 56;
+    roundRect(W/2 - kw/2, 58, kw, 46, 23);
+    ctx.fillStyle = grp.c1; ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(kText, W/2, 82);
+    // 类型区（与弹窗一致：我的MBTI: + 单行「CODE｜别名」+ 两侧主题色渐变短杠）
+    const ty = ay + AS + 36;
+    ctx.fillStyle = '#6b5f8f'; ctx.font = '800 17px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillText('\u6211\u7684MBTI\uff1a', W/2, ty);
+    const myY = ty + 58;
+    const fCode = '900 54px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+    const fNick = '900 42px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.font = fCode; const cw = ctx.measureText(code).width;
+    ctx.font = fNick; const nw = ctx.measureText(info[0]).width;
+    ctx.font = '900 34px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+    const sw = ctx.measureText('\uff5c').width;
+    const tGap = 10, dashW = 30, dashGap = 16;
+    const total = dashW + dashGap + cw + tGap + sw + tGap + nw + dashGap + dashW;
+    let lx = W/2 - total/2;
+    const lg1 = ctx.createLinearGradient(lx, 0, lx + dashW, 0);
+    lg1.addColorStop(0, 'rgba(0,0,0,0)'); lg1.addColorStop(1, grp.c1);
+    ctx.fillStyle = lg1; roundRect(lx, myY - 3, dashW, 6, 3); ctx.fill();
+    const lg2 = ctx.createLinearGradient(lx + total - dashW, 0, lx + total, 0);
+    lg2.addColorStop(0, grp.c1); lg2.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = lg2; roundRect(lx + total - dashW, myY - 3, dashW, 6, 3); ctx.fill();
+    lx += dashW + dashGap;
+    ctx.textAlign = 'left';
+    ctx.font = fCode; ctx.fillStyle = grp.c1; ctx.fillText(code, lx, myY);
+    lx += cw + tGap;
+    ctx.font = '900 34px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillStyle = 'rgba(90,80,130,.4)'; ctx.fillText('\uff5c', lx, myY);
+    lx += sw + tGap;
+    ctx.font = fNick; ctx.fillStyle = '#3a3055'; ctx.fillText(info[0], lx, myY);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#4a4266'; ctx.font = '800 22px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+    wrapText('\u201c' + info[9] + '\u201d', W/2, myY + 52, W - 120, 34);
+    // 核心优势 chips 行（x 坐标按左对齐计算，必须显式 left，否则继承 center 会让文字戳出胶囊左侧）
+    ctx.font = '900 15px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+    const chs = info[3].map(s=>({s, w: Math.ceil(ctx.measureText(s).width) + 30}));
+    const cGap = 10;
+    const cTotal = chs.reduce((a,c)=>a+c.w, 0) + cGap * (chs.length - 1);
+    let cx2 = (W - cTotal) / 2;
+    const chY = myY + 106;
+    ctx.textAlign = 'left';
+    chs.forEach(c=>{
+      roundRect(cx2, chY - 17, c.w, 34, 17);
+      ctx.fillStyle = grp.c1 + '18'; ctx.fill();
+      ctx.strokeStyle = grp.c1 + '4d'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.fillStyle = '#2e2848';
+      ctx.fillText(c.s, cx2 + 15, chY);
+      cx2 += c.w + cGap;
+    });
+    // 四维能量行（加大胶囊）
+    if(LAST_DIMS && LAST_DIMS.length === 4){
+      const dY = myY + 160, dGap = 12;
+      const pads = LAST_DIMS.map(d=>{
+        ctx.font = '900 16px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+        return {lab:d.lab, pct:d.pct + '%', w: Math.ceil(ctx.measureText(d.lab + '  ' + d.pct + '%').width) + 30};
+      });
+      const totalW = pads.reduce((s,p)=>s+p.w, 0) + dGap * 3;
+      let dx = (W - totalW) / 2;
+      ctx.textAlign = 'left';
+      pads.forEach(p=>{
+        roundRect(dx, dY - 18, p.w, 36, 18);
+        ctx.fillStyle = grp.c1 + '1a'; ctx.fill();
+        ctx.strokeStyle = grp.c1 + '59'; ctx.lineWidth = 1.5; ctx.stroke();
+        ctx.font = '900 16px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+        ctx.fillStyle = grp.c1;
+        ctx.fillText(p.lab, dx + 15, dY);
+        ctx.fillStyle = '#2e2848';
+        ctx.fillText(p.pct, dx + 15 + ctx.measureText(p.lab + ' ').width, dY);
+        dx += p.w + dGap;
+      });
+      ctx.textAlign = 'center';
+    }
+    $('plImg').src = cv.toDataURL('image/jpeg', 0.92);
+    $('posterLayer').classList.add('show');
+  };
+  img.onerror = ()=>{
+    const t = $('mtoast');
+    t.textContent = '海报生成失败，请重试';
+    t.style.background = 'linear-gradient(135deg,#9aa7ff,#ff9ad5)';
+    t.style.boxShadow = '0 8px 22px rgba(154,167,255,.5)';
+    t.classList.add('show');
+    clearTimeout(t._h);
+    t._h = setTimeout(()=>t.classList.remove('show'), 1900);
+  };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+</script>
+</body>
+</html>
